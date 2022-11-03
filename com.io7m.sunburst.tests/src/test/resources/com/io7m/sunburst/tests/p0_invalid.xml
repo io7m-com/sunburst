@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Package xmlns="com.io7m.sunburst:package:1">
+  <Identifier>
+    <Name group=" "
+          name=" x"/>
+    <Version major="q"
+             minor="x"
+             patch="w"/>
+  </Identifier>
+  <Metadata>
+    <Meta key="project.url"
+          value="https://www.io7m.com/software/sunburst"/>
+    <Meta key="project.name"
+          value="sunburst"/>
+    <Meta key="project.name"
+          value="https://www.github.com/io7m/sunburst"/>
+  </Metadata>
+  <Entries>
+    <Entry path="/a"
+           hashAlgorithm="SHA2_256"
+           hashValue="F74F221E3C374175B074E6A11A1CB17466015DCE03B1DAB1288D7EAB1D2A6862"
+           size="23"
+           contentType="text/plain"/>
+    <Entry path="/a"
+           hashAlgorithm="SHA2_256"
+           hashValue="F74F221E3C374175B074E6A11A1CB17466015DCE03B1DAB1288D7EAB1D2A6862"
+           size="23"
+           contentType="text/plain"/>
+    <Entry path="/b"
+           hashAlgorithm="SHA2_256"
+           hashValue=" "
+           size="13"
+           contentType="text/plain"/>
+    <Entry path="/c"
+           hashAlgorithm="SHA2_256"
+           hashValue="ABC6FD595FC079D3114D4B71A4D84B1D1D0F79DF1E70F8813212F2A65D8916DF"
+           size="xz"
+           contentType="text/plain"/>
+  </Entries>
+</Package>

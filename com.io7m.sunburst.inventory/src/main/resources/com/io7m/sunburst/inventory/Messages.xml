@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+
+<properties>
+  <entry key="errorClosing">One or more errors occurred whilst closing resources.</entry>
+  <entry key="errorDatabaseWrongID">The database {0} does not have a valid header (expected 0x{1}, received 0x{2}).</entry>
+  <entry key="errorDatabaseUnsupportedVersion">The database {0} is of an unsupported version (expected 0x{1}, received 0x{2}).</entry>
+  <entry key="errorHashMismatch">Hash mismatch (expected {0} but received {1}).</entry>
+  <entry key="errorPackageMissingBlobs"><![CDATA[The package {0} refers to one or more blobs that are missing.
+Missing:
+  {1}
+]]>
+  </entry>
+</properties>
