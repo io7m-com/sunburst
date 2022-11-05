@@ -17,7 +17,8 @@
 
 package com.io7m.sunburst.tests;
 
-import com.io7m.sunburst.model.SBPackageName;
+import com.io7m.sunburst.model.SBPackageIdentifier;
+import com.io7m.sunburst.model.SBPackageVersion;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 
@@ -29,7 +30,15 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class SBPackageNameTest
 {
-  record Case(String groupName, String name)
+  private static final SBPackageVersion VERSION =
+    new SBPackageVersion(
+      1,
+      0,
+      0,
+      ""
+    );
+
+  record Case(String name)
   {
   }
 
@@ -41,17 +50,9 @@ public final class SBPackageNameTest
   public Stream<DynamicTest> testInvalidNames()
   {
     return Stream.of(
-      new Case("", ""),
-      new Case("A", "a"),
-      new Case("a", "A"),
+      new Case(""),
+      new Case("A"),
       new Case(
-        "abcdefgh.abcdefgh.abcdefgh.abcdefgh.abcdefgh.abcdefgh.abcdefgh."
-        + "abcdefgh.abcdefgh.abcdefgh.abcdefgh.abcdefgh.abcdefgh.abcdefgh."
-        + "abcdefgh.abcdefgh.abcdefgh.abcdefgh.abcdefgh.abcdefgh.abcdefgh."
-        + "abcdefgh.abcdefgh.abcdefgh.abcdefgh.abcdefgh.abcdefgh.abcdefgh.abcd",
-        "a"),
-      new Case(
-        "a",
         "abcdefgh.abcdefgh.abcdefgh.abcdefgh.abcdefgh.abcdefgh.abcdefgh."
         + "abcdefgh.abcdefgh.abcdefgh.abcdefgh.abcdefgh.abcdefgh.abcdefgh."
         + "abcdefgh.abcdefgh.abcdefgh.abcdefgh.abcdefgh.abcdefgh.abcdefgh."
@@ -67,8 +68,8 @@ public final class SBPackageNameTest
   public Stream<DynamicTest> testValidNames()
   {
     return Stream.of(
-      new Case("a", "a"),
-      new Case("com.io7m.example", "com.io7m.example")
+      new Case("a"),
+      new Case("com.io7m.example")
     ).map(SBPackageNameTest::validNameTestOf);
   }
 
@@ -79,7 +80,7 @@ public final class SBPackageNameTest
       "testInvalidName_%s".formatted(caseV),
       () -> {
         assertThrows(IllegalArgumentException.class, () -> {
-          new SBPackageName(caseV.groupName, caseV.name);
+          new SBPackageIdentifier(caseV.name, VERSION);
         });
       });
   }
@@ -90,8 +91,8 @@ public final class SBPackageNameTest
     return DynamicTest.dynamicTest(
       "testValidName_%s".formatted(caseV),
       () -> {
-        final var p0 = new SBPackageName(caseV.groupName, caseV.name);
-        final var p1 = new SBPackageName(caseV.groupName, caseV.name);
+        final var p0 = new SBPackageIdentifier(caseV.name, VERSION);
+        final var p1 = new SBPackageIdentifier(caseV.name, VERSION);
         assertEquals(p0, p1);
         assertEquals(p0, p0);
         assertEquals(p0.hashCode(), p1.hashCode());

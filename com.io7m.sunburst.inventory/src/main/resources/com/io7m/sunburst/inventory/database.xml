@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Schemas xmlns="urn:com.io7m.trasco.database.statements:1:0">
+  <Schema versionCurrent="0">
+    <Comment>
+      The schema version table stores the current version of the database schema. Implementations are expected to query
+      this table on connecting to the database in order to ensure that the calling code is compatible with the tables in
+      the database.
+    </Comment>
+
+    <Statement><![CDATA[
+create table schema_version (
+  version_ban   char(1) not null default 'x',
+  version_number integer  not null,
+
+  constraint check_ban_primary primary key (version_ban),
+  constraint check_ban_baned check (version_ban = 'x')
+)
+]]></Statement>
+  </Schema>
+
+  <Schema versionCurrent="1">
+    <Statement><![CDATA[
+create table blobs (
+  id              integer primary key not null,
+  hash_algorithm  text                not null,
+  hash            text                not null,
+  content_type    text                not null,
+  size            integer             not null
+)
+-- [jooq ignore start]
+strict
+-- [jooq ignore stop]
+]]></Statement>
+
+    <Statement><![CDATA[
+-- [jooq ignore start]
+create unique index blobs_hash_unique on blobs (hash_algorithm, hash)
+-- [jooq ignore stop]
+]]></Statement>
+
+    <Statement><![CDATA[
+create table packages (
+  id                 integer primary key not null,
+  name               text                not null,
+  version_major      integer             not null,
+  version_minor      integer             not null,
+  version_patch      integer             not null,
+  version_qualifier  text                not null,
+  updated            text                not null
+)
+-- [jooq ignore start]
+strict
+-- [jooq ignore stop]
+]]></Statement>
+
+    <Statement><![CDATA[
+-- [jooq ignore start]
+create unique index packages_unique on packages (name, version_major, version_minor, version_patch, version_qualifier)
+-- [jooq ignore stop]
+]]></Statement>
+
+    <Statement><![CDATA[
+create table package_blobs (
+  package_id  integer not null,
+  blob_id     integer not null,
+  path        text    not null,
+
+  foreign key (package_id) references packages (id),
+  foreign key (blob_id)    references blobs (id)
+)
+-- [jooq ignore start]
+strict
+-- [jooq ignore stop]
+]]></Statement>
+
+    <Statement><![CDATA[
+-- [jooq ignore start]
+create unique index package_blobs_unique on package_blobs (package_id, blob_id, path)
+-- [jooq ignore stop]
+]]></Statement>
+
+    <Statement><![CDATA[
+-- [jooq ignore start]
+create index package_blobs_package on package_blobs (package_id, blob_id)
+-- [jooq ignore stop]
+]]></Statement>
+
+    <Statement><![CDATA[
+-- [jooq ignore start]
+create index package_blobs_path on package_blobs (package_id, path)
+-- [jooq ignore stop]
+]]></Statement>
+
+    <Statement><![CDATA[
+-- [jooq ignore start]
+create index package_blobs_blob on package_blobs (blob_id)
+-- [jooq ignore stop]
+]]></Statement>
+
+    <Statement><![CDATA[
+create table package_meta (
+  package_id  integer     not null,
+  meta_key    text        not null,
+  meta_value  text        not null,
+
+-- [jooq ignore start]
+  primary key (package_id, meta_key),
+-- [jooq ignore stop]
+  foreign key (package_id) references packages (id)
+)
+-- [jooq ignore start]
+strict
+-- [jooq ignore stop]
+]]></Statement>
+
+  </Schema>
+</Schemas>

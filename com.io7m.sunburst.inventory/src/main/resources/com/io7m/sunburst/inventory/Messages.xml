@@ -12,4 +12,7 @@ Missing:
   {1}
 ]]>
   </entry>
+  <entry key="errorPackageDuplicate">The package {0} is already installed.</entry>
+  <entry key="errorBlobReferenced">The blob {0} is referenced by one or more packages and cannot be removed.</entry>
+  <entry key="errorPathNonexistent">The package {0} does not contain a blob with path {1}.</entry>
 </properties>

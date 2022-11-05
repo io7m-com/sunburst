@@ -35,46 +35,34 @@ public enum SBHashAlgorithm
 
   SHA2_256 {
     @Override
-    public int index()
-    {
-      return 0;
-    }
-
-    @Override
     public String jssAlgorithmName()
     {
       return "SHA-256";
     }
   };
 
-  private static final Map<Integer, SBHashAlgorithm> VALUES =
+  private static final Map<String, SBHashAlgorithm> VALUES =
     Stream.of(values())
       .collect(Collectors.toMap(
-        v -> Integer.valueOf(v.index()),
+        SBHashAlgorithm::jssAlgorithmName,
         identity()
       ));
 
   /**
-   * @param index The hash algorithm index
+   * @param name The hash algorithm name
    *
-   * @return The hash algorithm associated with the given index
+   * @return The hash algorithm associated with the given name
    */
 
-  public static SBHashAlgorithm ofIdentifier(
-    final int index)
+  public static SBHashAlgorithm ofJSSName(
+    final String name)
   {
-    return Optional.ofNullable(VALUES.get(index))
+    return Optional.ofNullable(VALUES.get(name))
       .orElseThrow(() -> {
         throw new IllegalArgumentException(
-          "Unrecognized hash algorithm value: %d".formatted(index));
+          "Unrecognized hash algorithm value: %s".formatted(name));
       });
   }
-
-  /**
-   * @return The hash algorithm index
-   */
-
-  public abstract int index();
 
   /**
    * @return The name of the algorithm as it appears in the Java Security API

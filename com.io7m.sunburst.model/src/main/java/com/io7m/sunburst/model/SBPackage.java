@@ -16,8 +16,8 @@
 
 package com.io7m.sunburst.model;
 
+import java.util.Map;
 import java.util.Objects;
-import java.util.SortedMap;
 
 /**
  * A package.
@@ -29,8 +29,8 @@ import java.util.SortedMap;
 
 public record SBPackage(
   SBPackageIdentifier identifier,
-  SortedMap<String, String> metadata,
-  SortedMap<SBPath, SBPackageEntry> entries)
+  Map<String, String> metadata,
+  Map<SBPath, SBPackageEntry> entries)
 {
   /**
    * A package.

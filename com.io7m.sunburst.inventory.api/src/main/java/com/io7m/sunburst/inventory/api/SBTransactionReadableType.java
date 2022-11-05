@@ -21,10 +21,13 @@ import com.io7m.sunburst.model.SBBlob;
 import com.io7m.sunburst.model.SBHash;
 import com.io7m.sunburst.model.SBPackage;
 import com.io7m.sunburst.model.SBPackageIdentifier;
+import com.io7m.sunburst.model.SBPath;
 
+import java.nio.file.Path;
+import java.time.OffsetDateTime;
+import java.util.Map;
 import java.util.Optional;
-import java.util.SortedMap;
-import java.util.SortedSet;
+import java.util.Set;
 
 /**
  * The type of transactions that can be read.
@@ -33,10 +36,54 @@ import java.util.SortedSet;
 public interface SBTransactionReadableType
   extends SBTransactionCloseableType
 {
-  SortedSet<SBPackageIdentifier> packages()
+  /**
+   * Obtain the file associated with the blob in the given package.
+   *
+   * @param identifier The package identifier
+   * @param path       The file path
+   *
+   * @return A file path
+   *
+   * @throws SBInventoryException On errors
+   */
+
+  Path blobFile(
+    SBPackageIdentifier identifier,
+    SBPath path)
     throws SBInventoryException;
 
-  Optional<SBPackage> packageGet(SBPackageIdentifier identifier)
+  /**
+   * @param time The comparison time
+   *
+   * @return The installed set of packages that have been updated since the
+   * given time
+   *
+   * @throws SBInventoryException On errors
+   */
+
+  Set<SBPackageIdentifier> packagesUpdatedSince(
+    OffsetDateTime time)
+    throws SBInventoryException;
+
+  /**
+   * @return The installed set of packages
+   *
+   * @throws SBInventoryException On errors
+   */
+
+  Set<SBPackageIdentifier> packages()
+    throws SBInventoryException;
+
+  /**
+   * @param identifier The package identifier
+   *
+   * @return The package with the given identifier, if one is installed
+   *
+   * @throws SBInventoryException On errors
+   */
+
+  Optional<SBPackage> packageGet(
+    SBPackageIdentifier identifier)
     throws SBInventoryException;
 
   /**
@@ -60,6 +107,17 @@ public interface SBTransactionReadableType
    * @throws SBInventoryException On errors
    */
 
-  SortedMap<SBHash, SBBlob> blobList()
+  Map<SBHash, SBBlob> blobList()
+    throws SBInventoryException;
+
+  /**
+   * List all blobs that are not referenced by any packages.
+   *
+   * @return The unreferenced blobs
+   *
+   * @throws SBInventoryException On errors
+   */
+
+  Map<SBHash, SBBlob> blobsUnreferenced()
     throws SBInventoryException;
 }

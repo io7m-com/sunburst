@@ -70,6 +70,8 @@ public record SBPackageVersion(
 
   public SBPackageVersion
   {
+    Objects.requireNonNull(qualifier, "qualifier");
+
     final var matcher = VALID_QUALIFIER.matcher(qualifier);
     if (!matcher.matches()) {
       throw new IllegalArgumentException(
@@ -107,6 +109,15 @@ public record SBPackageVersion(
       "Version '%s' must match the pattern '%s'"
         .formatted(text, VALID_VERSION)
     );
+  }
+
+  /**
+   * @return {@code true} if this version is a snapshot version
+   */
+
+  public boolean isSnapshot()
+  {
+    return Objects.equals(this.qualifier, "SNAPSHOT");
   }
 
   @Override

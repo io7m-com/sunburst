@@ -1,0 +1,195 @@
+/*
+ * Copyright © 2022 Mark Raynsford <code@io7m.com> https://www.io7m.com
+ *
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+ * SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
+ * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+
+
+package com.io7m.sunburst.xml.peers;
+
+import com.io7m.anethum.common.ParseException;
+import com.io7m.anethum.common.ParseSeverity;
+import com.io7m.anethum.common.ParseStatus;
+import com.io7m.jlexing.core.LexicalPosition;
+import com.io7m.sunburst.model.SBPackageIdentifier;
+import com.io7m.sunburst.model.SBPackageVersion;
+import com.io7m.sunburst.model.SBPeer;
+import com.io7m.sunburst.model.SBPeerException;
+import com.io7m.sunburst.xml.peers.jaxb.Peer;
+import jakarta.xml.bind.JAXBContext;
+
+import javax.xml.XMLConstants;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.SchemaFactory;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HexFormat;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Consumer;
+
+import static jakarta.xml.bind.ValidationEvent.ERROR;
+import static jakarta.xml.bind.ValidationEvent.FATAL_ERROR;
+import static jakarta.xml.bind.ValidationEvent.WARNING;
+
+/**
+ * The default peer parsers.
+ */
+
+public final class SBPeerParsers
+  implements SBPeerParserFactoryType
+{
+  /**
+   * The default peer parsers.
+   */
+
+  public SBPeerParsers()
+  {
+
+  }
+
+  @Override
+  public SBPeerParserType createParserWithContext(
+    final Void context,
+    final URI source,
+    final InputStream stream,
+    final Consumer<ParseStatus> statusConsumer)
+  {
+    Objects.requireNonNull(source, "source");
+    Objects.requireNonNull(stream, "stream");
+    Objects.requireNonNull(statusConsumer, "statusConsumer");
+
+    return new Parser(source, stream, statusConsumer);
+  }
+
+  private static final class Parser implements SBPeerParserType
+  {
+    private static final HexFormat HEX_FORMAT =
+      HexFormat.of()
+        .withUpperCase();
+
+    private final URI source;
+    private final InputStream stream;
+    private final Consumer<ParseStatus> statusConsumer;
+
+    Parser(
+      final URI inSource,
+      final InputStream inStream,
+      final Consumer<ParseStatus> inStatusConsumer)
+    {
+      this.source =
+        Objects.requireNonNull(inSource, "source");
+      this.stream =
+        Objects.requireNonNull(inStream, "stream");
+      this.statusConsumer =
+        Objects.requireNonNull(inStatusConsumer, "statusConsumer");
+    }
+
+    @Override
+    public SBPeer execute()
+      throws ParseException
+    {
+      final var errors = new ArrayList<ParseStatus>();
+
+      try {
+        final var schemas =
+          SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        final var schema =
+          schemas.newSchema(
+            SBPeerParsers.class.getResource(
+              "/com/io7m/sunburst/xml/peers/peer-1.xsd")
+          );
+
+        final var context =
+          JAXBContext.newInstance("com.io7m.sunburst.xml.peers.jaxb");
+        final var unmarshaller =
+          context.createUnmarshaller();
+
+        unmarshaller.setEventHandler(event -> {
+          try {
+            final var status =
+              ParseStatus.builder()
+                .setErrorCode("xml")
+                .setMessage(event.getMessage())
+                .setSeverity(
+                  switch (event.getSeverity()) {
+                    case WARNING -> ParseSeverity.PARSE_WARNING;
+                    case ERROR -> ParseSeverity.PARSE_ERROR;
+                    case FATAL_ERROR -> ParseSeverity.PARSE_ERROR;
+                    default -> ParseSeverity.PARSE_ERROR;
+                  })
+                .setLexical(LexicalPosition.of(
+                  event.getLocator().getLineNumber(),
+                  event.getLocator().getColumnNumber(),
+                  Optional.of(event.getLocator().getURL().toURI())
+                )).build();
+
+            errors.add(status);
+            this.statusConsumer.accept(status);
+          } catch (final URISyntaxException e) {
+            // Nothing we can do about it
+          }
+          return true;
+        });
+        unmarshaller.setSchema(schema);
+
+        final var streamSource =
+          new StreamSource(this.stream, this.source.toString());
+        final var unmarshalled =
+          (Peer) unmarshaller.unmarshal(streamSource);
+
+        if (!errors.isEmpty()) {
+          throw new IllegalStateException();
+        }
+
+        return processPeer(unmarshalled);
+      } catch (final Exception e) {
+        throw new ParseException("Parsing failed.", List.copyOf(errors));
+      }
+    }
+
+    private static SBPeer processPeer(
+      final Peer p)
+      throws SBPeerException
+    {
+      final var b =
+        SBPeer.builder(p.getName());
+
+      for (final var i : p.getImport()) {
+        b.addImport(
+          new SBPackageIdentifier(
+            i.getName(),
+            new SBPackageVersion(
+              (int) i.getMajor(),
+              (int) i.getMinor(),
+              (int) i.getPatch(),
+              Objects.requireNonNullElse(i.getQualifier(), "")
+            )
+          )
+        );
+      }
+      return b.build();
+    }
+
+    @Override
+    public void close()
+      throws IOException
+    {
+      this.stream.close();
+    }
+  }
+}

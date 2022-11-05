@@ -24,7 +24,6 @@ import com.io7m.sunburst.model.SBHash;
 import com.io7m.sunburst.model.SBPackage;
 import com.io7m.sunburst.model.SBPackageEntry;
 import com.io7m.sunburst.model.SBPackageIdentifier;
-import com.io7m.sunburst.model.SBPackageName;
 import com.io7m.sunburst.model.SBPackageVersion;
 import com.io7m.sunburst.model.SBPath;
 import org.apache.commons.io.input.BoundedInputStream;
@@ -37,15 +36,21 @@ import java.io.ByteArrayInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.SecureRandom;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import static com.io7m.sunburst.error_codes.SBErrorCodesStandard.ERROR_BLOB_REFERENCED;
+import static com.io7m.sunburst.error_codes.SBErrorCodesStandard.ERROR_PACKAGE_DUPLICATE;
 import static com.io7m.sunburst.error_codes.SBErrorCodesStandard.ERROR_PACKAGE_MISSING_BLOBS;
+import static com.io7m.sunburst.error_codes.SBErrorCodesStandard.ERROR_PATH_NONEXISTENT;
 import static com.io7m.sunburst.model.SBHashAlgorithm.SHA2_256;
 import static com.io7m.sunburst.tests.SBTestDirectories.resourceOf;
 import static java.util.Locale.ROOT;
@@ -59,6 +64,48 @@ public final class SBInventoriesTest
 {
   private Path directory;
   private SBInventories inventories;
+
+  private static ExamplePackage createExamplePackage()
+    throws Exception
+  {
+    final var blobs =
+      new HashMap<SBHash, SBBlob>();
+    final var blobsData =
+      new HashMap<SBHash, byte[]>();
+    final var rng =
+      SecureRandom.getInstanceStrong();
+
+    final var buffer = new byte[8192];
+    final var entries = new ArrayList<SBPackageEntry>();
+    for (int index = 0; index < 10000; ++index) {
+      rng.nextBytes(buffer);
+      final var hash =
+        SBHash.hashOf(SHA2_256, new ByteArrayInputStream(buffer));
+      final var blob =
+        new SBBlob(8192L, "application/octet-stream", hash);
+      blobs.put(hash, blob);
+      blobsData.put(hash, Arrays.copyOf(buffer, buffer.length));
+      entries.add(new SBPackageEntry(SBPath.parse("/a" + index), blob));
+    }
+
+    final var entryMap =
+      entries.stream()
+        .collect(Collectors.toMap(SBPackageEntry::path, identity()));
+
+    final var packageV = new SBPackage(
+      new SBPackageIdentifier(
+        "com.io7m.example.main",
+        new SBPackageVersion(1, 0, 0, "")
+      ),
+      Map.ofEntries(
+        Map.entry("title", "A title."),
+        Map.entry("something", "Something.")
+      ),
+      entryMap
+    );
+
+    return new ExamplePackage(blobs, blobsData, packageV);
+  }
 
   @BeforeEach
   public void setup()
@@ -158,35 +205,14 @@ public final class SBInventoriesTest
   public void testOpenBlobAddMany()
     throws Exception
   {
-    final var blobs =
-      new HashMap<SBHash, SBBlob>();
-    final var blobsData =
-      new HashMap<SBHash, byte[]>();
-
-    final var rng =
-      SecureRandom.getInstanceStrong();
-
-    final var buffer = new byte[8192];
-    for (int index = 0; index < 10000; ++index) {
-      rng.nextBytes(buffer);
-      final var hash =
-        SBHash.hashOf(SHA2_256, new ByteArrayInputStream(buffer));
-      blobs.put(
-        hash,
-        new SBBlob(8192L, "application/octet-stream", hash)
-      );
-      blobsData.put(
-        hash,
-        Arrays.copyOf(buffer, buffer.length)
-      );
-    }
+    final var packV = createExamplePackage();
 
     try (var inventory =
            this.inventories.openReadWrite(
              new SBInventoryConfiguration(ROOT, this.directory))) {
       try (var t = inventory.openTransaction()) {
-        for (final var b : blobs.values()) {
-          t.blobAdd(b, new ByteArrayInputStream(blobsData.get(b.hash())));
+        for (final var b : packV.blobs.values()) {
+          t.blobAdd(b, new ByteArrayInputStream(packV.blobsData.get(b.hash())));
         }
         t.commit();
       }
@@ -196,7 +222,8 @@ public final class SBInventoriesTest
            this.inventories.openReadOnly(
              new SBInventoryConfiguration(ROOT, this.directory))) {
       try (var t = inventory.openTransactionReadable()) {
-        assertEquals(blobs, t.blobList());
+        assertEquals(packV.blobs, t.blobList());
+        assertEquals(packV.blobs, t.blobsUnreferenced());
       }
     }
   }
@@ -330,7 +357,7 @@ public final class SBInventoriesTest
 
     final var packageV = new SBPackage(
       new SBPackageIdentifier(
-        new SBPackageName("com.io7m.example", "com.io7m.example.main"),
+        "com.io7m.example.main",
         new SBPackageVersion(1, 0, 0, "")
       ),
       new TreeMap<>(),
@@ -361,6 +388,74 @@ public final class SBInventoriesTest
   public void testPackageAddOK()
     throws Exception
   {
+    final var packV =
+      createExamplePackage();
+
+    try (var inventory =
+           this.inventories.openReadWrite(
+             new SBInventoryConfiguration(ROOT, this.directory))) {
+      try (var t = inventory.openTransaction()) {
+        for (final var b : packV.blobs.values()) {
+          t.blobAdd(b, new ByteArrayInputStream(packV.blobsData.get(b.hash())));
+        }
+        t.packagePut(packV.packageV);
+        t.commit();
+      }
+    }
+
+    try (var inventory =
+           this.inventories.openReadOnly(
+             new SBInventoryConfiguration(ROOT, this.directory))) {
+      try (var t = inventory.openTransactionReadable()) {
+        final var identifier = packV.packageV.identifier();
+        assertEquals(Set.of(identifier), t.packages());
+        assertEquals(packV.packageV, t.packageGet(identifier).orElseThrow());
+
+        assertEquals(
+          Set.of(identifier),
+          t.packagesUpdatedSince(OffsetDateTime.now().minusDays(1L))
+        );
+        assertEquals(
+          Set.of(),
+          t.packagesUpdatedSince(OffsetDateTime.now().plusDays(1L))
+        );
+        assertEquals(
+          Map.of(),
+          t.blobsUnreferenced()
+        );
+
+        for (final var entry : packV.packageV.entries().values()) {
+          final var file =
+            t.blobFile(identifier, entry.path());
+          final var blob =
+            entry.blob();
+
+          try (var stream = Files.newInputStream(file)) {
+            final var fileHash =
+              SBHash.hashOf(blob.hash().algorithm(), stream);
+            assertEquals(blob.hash(), fileHash);
+          }
+        }
+
+        final var ex =
+          assertThrows(SBInventoryException.class, () -> {
+            t.blobFile(identifier, SBPath.parse("/nonexistent"));
+          });
+        assertEquals(ERROR_PATH_NONEXISTENT, ex.errorCode());
+      }
+    }
+  }
+
+  /**
+   * Non-snapshot packages cannot be updated.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testPackageUpdateDisallowed()
+    throws Exception
+  {
     final var blobs =
       new HashMap<SBHash, SBBlob>();
     final var blobsData =
@@ -387,11 +482,14 @@ public final class SBInventoriesTest
 
     final var packageV = new SBPackage(
       new SBPackageIdentifier(
-        new SBPackageName("com.io7m.example", "com.io7m.example.main"),
+        "com.io7m.example.main",
         new SBPackageVersion(1, 0, 0, "")
       ),
-      new TreeMap<>(),
-      new TreeMap<>(entryMap)
+      Map.ofEntries(
+        Map.entry("title", "A title."),
+        Map.entry("something", "Something.")
+      ),
+      entryMap
     );
 
     try (var inventory =
@@ -407,12 +505,271 @@ public final class SBInventoriesTest
     }
 
     try (var inventory =
+           this.inventories.openReadWrite(
+             new SBInventoryConfiguration(ROOT, this.directory))) {
+      try (var t = inventory.openTransaction()) {
+        final var ex =
+          assertThrows(SBInventoryException.class, () -> {
+            t.packagePut(packageV);
+          });
+
+        assertEquals(ERROR_PACKAGE_DUPLICATE, ex.errorCode());
+        t.commit();
+      }
+    }
+  }
+
+  /**
+   * Nonexistent packages cannot be retrieved.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testPackageNonexistent()
+    throws Exception
+  {
+    try (var inventory =
+           this.inventories.openReadWrite(
+             new SBInventoryConfiguration(ROOT, this.directory))) {
+      try (var t = inventory.openTransaction()) {
+        assertEquals(Optional.empty(), t.packageGet(
+          new SBPackageIdentifier(
+            "com.io7m.example.main",
+            new SBPackageVersion(1, 0, 0, "")
+          )
+        ));
+      }
+    }
+  }
+
+  /**
+   * Referenced blobs cannot be removed.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testPackageRemoveReferenced()
+    throws Exception
+  {
+    final var packV = createExamplePackage();
+
+    try (var inventory =
+           this.inventories.openReadWrite(
+             new SBInventoryConfiguration(ROOT, this.directory))) {
+      try (var t = inventory.openTransaction()) {
+        for (final var b : packV.blobs.values()) {
+          t.blobAdd(b, new ByteArrayInputStream(packV.blobsData.get(b.hash())));
+        }
+        t.packagePut(packV.packageV);
+        t.commit();
+      }
+
+      try (var t = inventory.openTransaction()) {
+        final var ex =
+          assertThrows(SBInventoryException.class, () -> {
+            t.blobRemove(packV.blobs.values().iterator().next());
+          });
+        assertEquals(ERROR_BLOB_REFERENCED, ex.errorCode());
+      }
+    }
+  }
+
+  /**
+   * Snapshot packages can be updated.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testPackageAddSnapshotUpdate()
+    throws Exception
+  {
+    final var rng =
+      SecureRandom.getInstanceStrong();
+    final var buffer =
+      new byte[8192];
+
+    final var blobsBefore =
+      new HashMap<SBHash, SBBlob>();
+    final var blobsBeforeData =
+      new HashMap<SBHash, byte[]>();
+
+    final var entriesBefore = new ArrayList<SBPackageEntry>();
+    for (int index = 0; index < 1000; ++index) {
+      rng.nextBytes(buffer);
+      final var hash =
+        SBHash.hashOf(SHA2_256, new ByteArrayInputStream(buffer));
+      final var blob =
+        new SBBlob(8192L, "application/octet-stream", hash);
+      blobsBefore.put(hash, blob);
+      blobsBeforeData.put(hash, Arrays.copyOf(buffer, buffer.length));
+      entriesBefore.add(new SBPackageEntry(SBPath.parse("/a" + index), blob));
+    }
+
+    final var blobsAfter =
+      new HashMap<SBHash, SBBlob>();
+    final var blobsAfterData =
+      new HashMap<SBHash, byte[]>();
+
+    final var entriesAfter = new ArrayList<SBPackageEntry>();
+    for (int index = 0; index < 1000; ++index) {
+      if (index % 2 == 0) {
+        final var before = entriesBefore.get(index);
+        entriesAfter.add(before);
+        final var blob = before.blob();
+        final var hash = blob.hash();
+        blobsAfter.put(hash, blob);
+        final var data =
+          Objects.requireNonNull(
+            blobsBeforeData.get(hash),
+            "blobsBeforeData.get(hash)");
+        blobsAfterData.put(hash, data);
+        continue;
+      }
+
+      rng.nextBytes(buffer);
+      final var hash =
+        SBHash.hashOf(SHA2_256, new ByteArrayInputStream(buffer));
+      final var blob =
+        new SBBlob(8192L, "application/octet-stream", hash);
+      blobsAfter.put(hash, blob);
+      blobsAfterData.put(hash, Arrays.copyOf(buffer, buffer.length));
+      entriesAfter.add(new SBPackageEntry(SBPath.parse("/a" + index), blob));
+    }
+
+    final var entriesBeforeMap =
+      entriesBefore.stream()
+        .collect(Collectors.toMap(SBPackageEntry::path, identity()));
+
+    final var entriesAfterMap =
+      entriesAfter.stream()
+        .collect(Collectors.toMap(SBPackageEntry::path, identity()));
+
+    final var packageBefore = new SBPackage(
+      new SBPackageIdentifier(
+        "com.io7m.example.main",
+        new SBPackageVersion(1, 0, 0, "SNAPSHOT")
+      ),
+      Map.ofEntries(
+        Map.entry("title", "A title."),
+        Map.entry("something", "Something.")
+      ),
+      entriesBeforeMap
+    );
+
+    final var packageAfter = new SBPackage(
+      new SBPackageIdentifier(
+        "com.io7m.example.main",
+        new SBPackageVersion(1, 0, 0, "SNAPSHOT")
+      ),
+      Map.ofEntries(
+        Map.entry("title", "A title after."),
+        Map.entry("something", "Something after.")
+      ),
+      entriesAfterMap
+    );
+
+    /*
+     * Add the package.
+     */
+
+    try (var inventory =
+           this.inventories.openReadWrite(
+             new SBInventoryConfiguration(ROOT, this.directory))) {
+      try (var t = inventory.openTransaction()) {
+        for (final var b : blobsBefore.values()) {
+          t.blobAdd(b, new ByteArrayInputStream(blobsBeforeData.get(b.hash())));
+        }
+        t.packagePut(packageBefore);
+        t.commit();
+      }
+    }
+
+    /*
+     * Update the package. This will cause roughly half of the blobs to
+     * become unreferenced (from the old package version).
+     */
+
+    try (var inventory =
+           this.inventories.openReadWrite(
+             new SBInventoryConfiguration(ROOT, this.directory))) {
+      try (var t = inventory.openTransaction()) {
+        for (final var b : blobsAfter.values()) {
+          t.blobAdd(b, new ByteArrayInputStream(blobsAfterData.get(b.hash())));
+        }
+        t.packagePut(packageAfter);
+        t.commit();
+      }
+    }
+
+    /*
+     * The blobs that were in the "before" package but are no longer in the
+     * "after" package are now unreferenced.
+     */
+
+    final var unreferenced = new HashMap<SBHash, SBBlob>();
+    for (final var blobBefore : blobsBefore.values()) {
+      if (!blobsAfter.containsKey(blobBefore.hash())) {
+        unreferenced.put(
+          blobBefore.hash(),
+          blobBefore
+        );
+      }
+    }
+
+    /*
+     * Check the results.
+     */
+
+    try (var inventory =
            this.inventories.openReadOnly(
              new SBInventoryConfiguration(ROOT, this.directory))) {
       try (var t = inventory.openTransactionReadable()) {
-        assertEquals(Set.of(packageV.identifier()), t.packages());
-        assertEquals(packageV, t.packageGet(packageV.identifier()).orElseThrow());
+        assertEquals(Set.of(packageAfter.identifier()), t.packages());
+        assertEquals(
+          packageAfter,
+          t.packageGet(packageAfter.identifier()).orElseThrow());
+
+        assertEquals(
+          Set.of(packageAfter.identifier()),
+          t.packagesUpdatedSince(OffsetDateTime.now().minusDays(1L))
+        );
+        assertEquals(
+          Set.of(),
+          t.packagesUpdatedSince(OffsetDateTime.now().plusDays(1L))
+        );
+        assertEquals(
+          unreferenced,
+          t.blobsUnreferenced()
+        );
       }
     }
+
+    /*
+     * Deleting the unreferenced blobs is now possible.
+     */
+
+    try (var inventory =
+           this.inventories.openReadWrite(
+             new SBInventoryConfiguration(ROOT, this.directory))) {
+      try (var t = inventory.openTransaction()) {
+        for (final var b : unreferenced.values()) {
+          t.blobRemove(b);
+        }
+
+        assertEquals(Map.of(), t.blobsUnreferenced());
+        t.commit();
+      }
+    }
+  }
+
+  record ExamplePackage(
+    HashMap<SBHash, SBBlob> blobs,
+    HashMap<SBHash, byte[]> blobsData,
+    SBPackage packageV)
+  {
+
   }
 }

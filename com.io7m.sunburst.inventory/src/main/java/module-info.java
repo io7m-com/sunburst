@@ -23,19 +23,17 @@ module com.io7m.sunburst.inventory
   requires static org.osgi.annotation.bundle;
   requires static org.osgi.annotation.versioning;
 
-  requires com.h2database.mvstore;
+  requires com.io7m.anethum.common;
+  requires com.io7m.jdeferthrow.core;
   requires com.io7m.jmulticlose.core;
   requires com.io7m.jxtrand.vanilla;
+  requires com.io7m.trasco.api;
+  requires com.io7m.trasco.vanilla;
+  requires org.jooq;
   requires org.slf4j;
+  requires org.xerial.sqlitejdbc;
 
   requires transitive com.io7m.sunburst.inventory.api;
-  requires com.io7m.sunburst.xml;
-
-  uses com.io7m.sunburst.xml.SBPackageParserFactoryType;
-  uses com.io7m.sunburst.xml.SBPackageSerializerFactoryType;
-
-  opens com.io7m.sunburst.inventory.datatypes
-    to com.h2database.mvstore;
 
   exports com.io7m.sunburst.inventory;
 }

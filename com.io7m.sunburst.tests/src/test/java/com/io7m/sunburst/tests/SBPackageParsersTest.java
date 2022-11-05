@@ -24,8 +24,8 @@ import com.io7m.sunburst.model.SBHash;
 import com.io7m.sunburst.model.SBPackage;
 import com.io7m.sunburst.model.SBPackageEntry;
 import com.io7m.sunburst.model.SBPath;
-import com.io7m.sunburst.xml.SBPackageParsers;
-import com.io7m.sunburst.xml.SBPackageSerializers;
+import com.io7m.sunburst.xml.packages.SBPackageParsers;
+import com.io7m.sunburst.xml.packages.SBPackageSerializers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,7 +37,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HexFormat;
+import java.util.List;
 
 import static com.io7m.sunburst.model.SBHashAlgorithm.SHA2_256;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -52,6 +54,7 @@ public final class SBPackageParsersTest
   private SBPackageParsers parsers;
   private SBPackageSerializers serializers;
   private Path directory;
+  private ArrayList<ParseStatus> errors;
 
   @BeforeEach
   public void setup()
@@ -63,6 +66,8 @@ public final class SBPackageParsersTest
       new SBPackageSerializers();
     this.directory =
       SBTestDirectories.createTempDirectory();
+    this.errors =
+      new ArrayList<ParseStatus>();
   }
 
   @AfterEach
@@ -142,10 +147,15 @@ public final class SBPackageParsersTest
         "p0.xml"
       );
 
-    final var pack = this.parsers.parseFile(file);
+    final var pack =
+      this.parsers.parseFile(file, parseStatus -> {
+        LOG.debug("{}", parseStatus);
+        this.errors.add(parseStatus);
+      });
+
     final var id = pack.identifier();
-    assertEquals("com.io7m.example", id.name().groupName());
-    assertEquals("com.io7m.example.main", id.name().name());
+    assertEquals("com.io7m.example.main", id.name());
+    assertEquals(List.of("com", "io7m", "example", "main"), id.nameSegments());
     assertEquals(1, id.version().major());
     assertEquals(0, id.version().minor());
     assertEquals(0, id.version().patch());
@@ -170,7 +180,9 @@ public final class SBPackageParsersTest
         new SBBlob(
           23L,
           "text/plain",
-          new SBHash(SHA2_256, unhex("F74F221E3C374175B074E6A11A1CB17466015DCE03B1DAB1288D7EAB1D2A6862"))
+          new SBHash(SHA2_256,
+                     unhex(
+                       "F74F221E3C374175B074E6A11A1CB17466015DCE03B1DAB1288D7EAB1D2A6862"))
         )
       ),
       entries.get(SBPath.parse("/a"))
@@ -181,7 +193,9 @@ public final class SBPackageParsersTest
         new SBBlob(
           13L,
           "text/plain",
-          new SBHash(SHA2_256, unhex("5891B5B522D5DF086D0FF0B110FBD9D21BB4FC7163AF34D08286A2E846F6BE03"))
+          new SBHash(SHA2_256,
+                     unhex(
+                       "5891B5B522D5DF086D0FF0B110FBD9D21BB4FC7163AF34D08286A2E846F6BE03"))
         )
       ),
       entries.get(SBPath.parse("/b"))
@@ -192,7 +206,9 @@ public final class SBPackageParsersTest
         new SBBlob(
           16L,
           "text/plain",
-          new SBHash(SHA2_256, unhex("ABC6FD595FC079D3114D4B71A4D84B1D1D0F79DF1E70F8813212F2A65D8916DF"))
+          new SBHash(SHA2_256,
+                     unhex(
+                       "ABC6FD595FC079D3114D4B71A4D84B1D1D0F79DF1E70F8813212F2A65D8916DF"))
         )
       ),
       entries.get(SBPath.parse("/c"))

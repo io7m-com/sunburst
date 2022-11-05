@@ -27,5 +27,6 @@ public interface SBInventoryType
    * @return A new transaction
    */
 
-  SBTransactionType openTransaction();
+  SBTransactionType openTransaction()
+    throws SBInventoryException;
 }

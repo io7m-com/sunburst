@@ -1,35 +1,33 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<Package xmlns="com.io7m.sunburst:package:1">
-  <Identifier>
-    <Name group="com.io7m.example"
-          name="com.io7m.example.main"/>
-    <Version major="1"
-             minor="0"
-             patch="0"/>
+<Package xmlns="urn:com.io7m.sunburst:package:1">
+  <Identifier Name="com.io7m.example.main">
+    <Version Major="1"
+             Minor="0"
+             Patch="0"/>
   </Identifier>
   <Metadata>
-    <Meta key="project.url"
-          value="https://www.io7m.com/software/sunburst"/>
-    <Meta key="project.name"
-          value="sunburst"/>
-    <Meta key="project.scm"
-          value="https://www.github.com/io7m/sunburst"/>
+    <Meta Key="project.url"
+          Value="https://www.io7m.com/software/sunburst"/>
+    <Meta Key="project.name"
+          Value="sunburst"/>
+    <Meta Key="project.scm"
+          Value="https://www.github.com/io7m/sunburst"/>
   </Metadata>
   <Entries>
-    <Entry path="/a"
-           hashAlgorithm="SHA2_256"
-           hashValue="F74F221E3C374175B074E6A11A1CB17466015DCE03B1DAB1288D7EAB1D2A6862"
-           size="23"
-           contentType="text/plain"/>
-    <Entry path="/b"
-           hashAlgorithm="SHA2_256"
-           hashValue="5891B5B522D5DF086D0FF0B110FBD9D21BB4FC7163AF34D08286A2E846F6BE03"
-           size="13"
-           contentType="text/plain"/>
-    <Entry path="/c"
-           hashAlgorithm="SHA2_256"
-           hashValue="ABC6FD595FC079D3114D4B71A4D84B1D1D0F79DF1E70F8813212F2A65D8916DF"
-           size="16"
-           contentType="text/plain"/>
+    <Entry Path="/a"
+           HashAlgorithm="SHA2_256"
+           HashValue="F74F221E3C374175B074E6A11A1CB17466015DCE03B1DAB1288D7EAB1D2A6862"
+           Size="23"
+           ContentType="text/plain"/>
+    <Entry Path="/b"
+           HashAlgorithm="SHA2_256"
+           HashValue="5891B5B522D5DF086D0FF0B110FBD9D21BB4FC7163AF34D08286A2E846F6BE03"
+           Size="13"
+           ContentType="text/plain"/>
+    <Entry Path="/c"
+           HashAlgorithm="SHA2_256"
+           HashValue="ABC6FD595FC079D3114D4B71A4D84B1D1D0F79DF1E70F8813212F2A65D8916DF"
+           Size="16"
+           ContentType="text/plain"/>
   </Entries>
 </Package>

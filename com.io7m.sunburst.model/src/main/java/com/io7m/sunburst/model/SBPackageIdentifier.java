@@ -14,26 +14,26 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-
 package com.io7m.sunburst.model;
 
 import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 
 /**
- * A package index.
+ * A package identifier.
  *
  * @param name    The name
  * @param version The version
  */
 
 public record SBPackageIdentifier(
-  SBPackageName name,
+  String name,
   SBPackageVersion version)
   implements Comparable<SBPackageIdentifier>
 {
   /**
-   * A package index.
+   * A package identifier.
    *
    * @param name    The name
    * @param version The version
@@ -43,6 +43,16 @@ public record SBPackageIdentifier(
   {
     Objects.requireNonNull(name, "name");
     Objects.requireNonNull(version, "version");
+    SBPackageNames.check(name);
+  }
+
+  /**
+   * @return The package name as an ordered list of segments
+   */
+
+  public List<String> nameSegments()
+  {
+    return List.of(this.name.split("\\."));
   }
 
   @Override
@@ -58,5 +68,28 @@ public record SBPackageIdentifier(
     return Comparator.comparing(SBPackageIdentifier::name)
       .thenComparing(SBPackageIdentifier::version)
       .compare(this, other);
+  }
+
+  /**
+   * Parse a package identifier.
+   *
+   * @param text The identifier text
+   *
+   * @return A package identifier
+   */
+
+  public static SBPackageIdentifier parse(
+    final String text)
+  {
+    final var segments = List.of(text.split(":"));
+    if (segments.size() != 2) {
+      throw new IllegalArgumentException(
+        "Received: \"%s\", Expected: <package-name>:<version>"
+          .formatted(text));
+    }
+    return new SBPackageIdentifier(
+      segments.get(0),
+      SBPackageVersion.parse(segments.get(1))
+    );
   }
 }

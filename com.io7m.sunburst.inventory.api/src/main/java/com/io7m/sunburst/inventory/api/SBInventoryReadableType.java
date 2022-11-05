@@ -14,7 +14,6 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-
 package com.io7m.sunburst.inventory.api;
 
 /**
@@ -25,9 +24,12 @@ public interface SBInventoryReadableType extends AutoCloseable
 {
   /**
    * @return A new transaction for reading
+   *
+   * @throws SBInventoryException On errors
    */
 
-  SBTransactionReadableType openTransactionReadable();
+  SBTransactionReadableType openTransactionReadable()
+    throws SBInventoryException;
 
   @Override
   void close()

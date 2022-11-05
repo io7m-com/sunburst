@@ -44,6 +44,18 @@ public interface SBTransactionWritableType
     throws SBInventoryException;
 
   /**
+   * Remove a blob from the inventory. This can only work if the blob is not
+   * referenced by any packages.
+   *
+   * @param blob The blob
+   *
+   * @throws SBInventoryException On errors
+   */
+
+  void blobRemove(SBBlob blob)
+    throws SBInventoryException;
+
+  /**
    * Write a package to the inventory.
    *
    * @param pack The package

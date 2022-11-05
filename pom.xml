@@ -8,7 +8,7 @@
   <parent>
     <groupId>com.io7m.primogenitor</groupId>
     <artifactId>com.io7m.primogenitor.full</artifactId>
-    <version>7.1.1</version>
+    <version>7.2.0-SNAPSHOT</version>
   </parent>
 
   <groupId>com.io7m.sunburst</groupId>
@@ -21,21 +21,29 @@
   <url>https://www.io7m.com/software/sunburst</url>
 
   <modules>
+    <module>com.io7m.sunburst.codegen</module>
     <module>com.io7m.sunburst.error_codes</module>
     <module>com.io7m.sunburst.inventory.api</module>
     <module>com.io7m.sunburst.inventory</module>
+    <module>com.io7m.sunburst.maven.plugin</module>
     <module>com.io7m.sunburst.model</module>
-    <module>com.io7m.sunburst.xml</module>
+    <module>com.io7m.sunburst.runtime.spi</module>
+    <module>com.io7m.sunburst.runtime</module>
     <module>com.io7m.sunburst.tests</module>
+    <module>com.io7m.sunburst.xml.packages</module>
+    <module>com.io7m.sunburst.xml.peers</module>
   </modules>
 
   <properties>
     <com.io7m.anethum.version>0.0.2</com.io7m.anethum.version>
     <com.io7m.cedarbridge.version>0.0.10</com.io7m.cedarbridge.version>
     <com.io7m.jbssio.version>1.1.1</com.io7m.jbssio.version>
-    <io7m.api.previousVersion>0.0.1-SNAPSHOT</io7m.api.previousVersion>
-    <junit.version>5.9.1</junit.version>
     <com.io7m.jxtrand.version>1.1.0</com.io7m.jxtrand.version>
+    <com.io7m.trasco.version>0.0.6-SNAPSHOT</com.io7m.trasco.version>
+    <io7m.api.previousVersion>0.0.1-SNAPSHOT</io7m.api.previousVersion>
+    <io7m.maven-api.version>3.8.6</io7m.maven-api.version>
+    <jooq.version>3.17.4</jooq.version>
+    <junit.version>5.9.1</junit.version>
   </properties>
 
   <licenses>
@@ -197,6 +205,74 @@
         <artifactId>junit-jupiter-api</artifactId>
         <version>${junit.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.xerial</groupId>
+        <artifactId>sqlite-jdbc</artifactId>
+        <version>3.39.3.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.io7m.trasco</groupId>
+        <artifactId>com.io7m.trasco.api</artifactId>
+        <version>${com.io7m.trasco.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.io7m.trasco</groupId>
+        <artifactId>com.io7m.trasco.vanilla</artifactId>
+        <version>${com.io7m.trasco.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jooq</groupId>
+        <artifactId>jooq</artifactId>
+        <version>${jooq.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.io7m.jodist</groupId>
+        <artifactId>com.io7m.jodist</artifactId>
+        <version>2.0.0</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-plugin-api</artifactId>
+        <version>${io7m.maven-api.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.plugin-tools</groupId>
+        <artifactId>maven-plugin-annotations</artifactId>
+        <version>3.6.4</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-core</artifactId>
+        <version>${io7m.maven-api.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-settings</artifactId>
+        <version>${io7m.maven-api.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-model</artifactId>
+        <version>${io7m.maven-api.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-compat</artifactId>
+        <version>${io7m.maven-api.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-artifact</artifactId>
+        <version>${io7m.maven-api.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.soebes.itf.jupiter.extension</groupId>
+        <artifactId>itf-jupiter-extension</artifactId>
+        <version>0.11.0</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -215,6 +291,24 @@
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>jaxb2-maven-plugin</artifactId>
           <version>3.1.0</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-plugin-plugin</artifactId>
+          <version>3.6.4</version>
+        </plugin>
+
+        <plugin>
+          <groupId>com.soebes.itf.jupiter.extension</groupId>
+          <artifactId>itf-maven-plugin</artifactId>
+          <version>0.11.0</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <version>2.22.2</version>
         </plugin>
       </plugins>
     </pluginManagement>

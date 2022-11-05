@@ -30,7 +30,22 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>com.io7m.sunburst.xml</artifactId>
+      <artifactId>com.io7m.sunburst.xml.packages</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>com.io7m.sunburst.xml.peers</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>com.io7m.sunburst.codegen</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>com.io7m.sunburst.maven.plugin</artifactId>
       <version>${project.version}</version>
     </dependency>
 
@@ -56,6 +71,32 @@
     </dependency>
 
     <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-plugin-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.plugin-tools</groupId>
+      <artifactId>maven-plugin-annotations</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-compat</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-artifact</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.soebes.itf.jupiter.extension</groupId>
+      <artifactId>itf-jupiter-extension</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>org.osgi.annotation.bundle</artifactId>
       <scope>provided</scope>
@@ -66,5 +107,61 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
+
+  <build>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>false</filtering>
+      </testResource>
+      <testResource>
+        <directory>src/test/resources-it</directory>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>
+
+    <plugins>
+      <plugin>
+        <groupId>com.soebes.itf.jupiter.extension</groupId>
+        <artifactId>itf-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>installing</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>install</goal>
+              <goal>resources-its</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <systemProperties>
+            <maven.version>${maven.version}</maven.version>
+            <maven.home>${maven.home}</maven.home>
+          </systemProperties>
+        </configuration>
+        <executions>
+          <execution>
+            <id>run-it</id>
+            <phase>integration-test</phase>
+            <goals>
+              <goal>integration-test</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Determine test coverage -->
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>

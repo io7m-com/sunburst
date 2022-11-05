@@ -24,13 +24,9 @@ import com.io7m.sunburst.inventory.api.SBInventoryReadableType;
 import com.io7m.sunburst.inventory.api.SBInventoryType;
 import com.io7m.sunburst.inventory.internal.SBInventory;
 import com.io7m.sunburst.inventory.internal.SBStrings;
-import com.io7m.sunburst.xml.SBPackageParserFactoryType;
-import com.io7m.sunburst.xml.SBPackageSerializerFactoryType;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.util.Objects;
-import java.util.ServiceLoader;
 
 /**
  * The default local inventory.
@@ -38,25 +34,6 @@ import java.util.ServiceLoader;
 
 public final class SBInventories implements SBInventoryFactoryType
 {
-  private final SBPackageParserFactoryType parsers;
-  private final SBPackageSerializerFactoryType serializers;
-
-  /**
-   * The default local inventory.
-   *
-   * @param inParsers     The package parsers
-   * @param inSerializers The package serializers
-   */
-
-  public SBInventories(
-    final SBPackageParserFactoryType inParsers,
-    final SBPackageSerializerFactoryType inSerializers)
-  {
-    this.parsers =
-      Objects.requireNonNull(inParsers, "parsers");
-    this.serializers =
-      Objects.requireNonNull(inSerializers, "serializers");
-  }
 
   /**
    * The default local inventory.
@@ -64,24 +41,7 @@ public final class SBInventories implements SBInventoryFactoryType
 
   public SBInventories()
   {
-    this(
-      ServiceLoader.load(SBPackageParserFactoryType.class)
-        .findFirst()
-        .orElseThrow(() -> noSuchService(SBPackageParserFactoryType.class)),
-      ServiceLoader.load(SBPackageSerializerFactoryType.class)
-        .findFirst()
-        .orElseThrow(() -> noSuchService(SBPackageSerializerFactoryType.class))
-    );
-  }
 
-  private static IllegalStateException noSuchService(
-    final Class<?> clazz)
-  {
-    return new IllegalStateException(
-      String.format(
-        "No available services of type %s",
-        clazz.getCanonicalName())
-    );
   }
 
   @Override
@@ -92,8 +52,6 @@ public final class SBInventories implements SBInventoryFactoryType
     try {
       return SBInventory.openReadOnly(
         new SBStrings(configuration.locale()),
-        this.parsers,
-        this.serializers,
         configuration
       );
     } catch (final IOException e) {
@@ -109,8 +67,6 @@ public final class SBInventories implements SBInventoryFactoryType
     try {
       return SBInventory.openReadWrite(
         new SBStrings(configuration.locale()),
-        this.parsers,
-        this.serializers,
         configuration
       );
     } catch (final IOException e) {

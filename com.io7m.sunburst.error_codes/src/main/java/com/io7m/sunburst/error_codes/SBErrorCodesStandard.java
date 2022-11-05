@@ -45,6 +45,13 @@ public final class SBErrorCodesStandard
     new SBErrorCode("error-db");
 
   /**
+   * There was a database error caused by Trasco.
+   */
+
+  public static final SBErrorCode ERROR_DATABASE_TRASCO =
+    new SBErrorCode("error-db-trasco");
+
+  /**
    * A hash value did not match the expected value.
    */
 
@@ -57,6 +64,27 @@ public final class SBErrorCodesStandard
 
   public static final SBErrorCode ERROR_PACKAGE_MISSING_BLOBS =
     new SBErrorCode("error-package-missing-blobs");
+
+  /**
+   * A package already exists.
+   */
+
+  public static final SBErrorCode ERROR_PACKAGE_DUPLICATE =
+    new SBErrorCode("error-package-duplicate");
+
+  /**
+   * A blob cannot be deleted while a package refers to it.
+   */
+
+  public static final SBErrorCode ERROR_BLOB_REFERENCED =
+    new SBErrorCode("error-blob-referenced");
+
+  /**
+   * No blob is associated with the given path.
+   */
+
+  public static final SBErrorCode ERROR_PATH_NONEXISTENT =
+    new SBErrorCode("error-path-nonexistent");
 
   private SBErrorCodesStandard()
   {
