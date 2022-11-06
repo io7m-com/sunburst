@@ -14,47 +14,32 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+package com.io7m.sunburst.runtime;
 
-package com.io7m.sunburst.model;
-
-import com.io7m.sunburst.error_codes.SBErrorCode;
-import com.io7m.sunburst.error_codes.SBException;
-
-import java.util.List;
 import java.util.Objects;
 
 /**
- * An exception caused by ill-formed peers.
+ * A peer factory crashed when trying to open the peer.
+ *
+ * @param factory   The peer factory
+ * @param exception The exception
  */
 
-public final class SBPeerException extends SBException
+public record SBRuntimeBrokenPeerFactory(
+  Class<?> factory,
+  Exception exception)
+  implements SBRuntimeProblemType
 {
-  private final List<String> problems;
-
   /**
-   * @return The problem list
-   */
-
-  public List<String> problems()
-  {
-    return this.problems;
-  }
-
-  /**
-   * An exception caused by ill-formed peers.
+   * A peer factory crashed when trying to open the peer.
    *
-   * @param errorCode  The error code
-   * @param message    The message
-   * @param inProblems The problem list
+   * @param factory   The peer factory
+   * @param exception The exception
    */
 
-  public SBPeerException(
-    final SBErrorCode errorCode,
-    final String message,
-    final List<String> inProblems)
+  public SBRuntimeBrokenPeerFactory
   {
-    super(errorCode, message);
-    this.problems =
-      List.copyOf(Objects.requireNonNull(inProblems, "problems"));
+    Objects.requireNonNull(factory, "factory");
+    Objects.requireNonNull(exception, "exception");
   }
 }

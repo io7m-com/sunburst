@@ -393,6 +393,12 @@ public final class SBInventory implements SBInventoryType
   }
 
   @Override
+  public SBInventoryConfiguration configuration()
+  {
+    return this.configuration;
+  }
+
+  @Override
   public SBTransactionReadableType openTransactionReadable()
     throws SBInventoryException
   {

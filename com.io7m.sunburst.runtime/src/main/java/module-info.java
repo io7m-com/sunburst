@@ -23,5 +23,15 @@ module com.io7m.sunburst.runtime
   requires static org.osgi.annotation.bundle;
   requires static org.osgi.annotation.versioning;
 
+  requires transitive com.io7m.sunburst.error_codes;
+  requires transitive com.io7m.sunburst.model;
+  requires transitive com.io7m.sunburst.inventory.api;
+
+  requires com.io7m.sunburst.runtime.spi;
+  requires com.io7m.jxtrand.vanilla;
+
+  uses com.io7m.sunburst.runtime.spi.SBPeerFactoryType;
+  uses com.io7m.sunburst.inventory.api.SBInventoryFactoryType;
+
   exports com.io7m.sunburst.runtime;
 }

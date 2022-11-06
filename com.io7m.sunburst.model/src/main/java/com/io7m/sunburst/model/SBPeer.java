@@ -24,6 +24,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static com.io7m.sunburst.error_codes.SBErrorCodesStandard.ERROR_PEER_MISCONFIGURED;
 
 /**
  * A well-formed peer.
@@ -101,6 +105,18 @@ public final class SBPeer
   public Map<String, SBPackageVersion> imports()
   {
     return this.imports;
+  }
+
+  /**
+   * @return The imports as a set of identifiers
+   */
+
+  public Set<SBPackageIdentifier> importSet()
+  {
+    return this.imports.entrySet()
+      .stream()
+      .map(e -> new SBPackageIdentifier(e.getKey(), e.getValue()))
+      .collect(Collectors.toUnmodifiableSet());
   }
 
   private static final class Strings
@@ -242,6 +258,7 @@ public final class SBPeer
 
       if (!this.problems.isEmpty()) {
         throw new SBPeerException(
+          ERROR_PEER_MISCONFIGURED,
           this.strings.format("errorImportGeneral"),
           this.problems
         );

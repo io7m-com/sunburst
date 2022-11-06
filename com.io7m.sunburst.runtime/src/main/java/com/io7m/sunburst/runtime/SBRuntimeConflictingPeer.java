@@ -14,47 +14,40 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+package com.io7m.sunburst.runtime;
 
-package com.io7m.sunburst.model;
-
-import com.io7m.sunburst.error_codes.SBErrorCode;
-import com.io7m.sunburst.error_codes.SBException;
-
-import java.util.List;
 import java.util.Objects;
 
 /**
- * An exception caused by ill-formed peers.
+ * Two peers tried to register with the same name.
+ *
+ * @param peer0     The peer 0 class
+ * @param peer0Name The peer 0 name
+ * @param peer1     The peer 1 class
+ * @param peer1Name The peer 1 name
  */
 
-public final class SBPeerException extends SBException
+public record SBRuntimeConflictingPeer(
+  Class<?> peer0,
+  String peer0Name,
+  Class<?> peer1,
+  String peer1Name)
+  implements SBRuntimeProblemType
 {
-  private final List<String> problems;
-
   /**
-   * @return The problem list
-   */
-
-  public List<String> problems()
-  {
-    return this.problems;
-  }
-
-  /**
-   * An exception caused by ill-formed peers.
+   * Two peers tried to register with the same name.
    *
-   * @param errorCode  The error code
-   * @param message    The message
-   * @param inProblems The problem list
+   * @param peer0     The peer 0 class
+   * @param peer0Name The peer 0 name
+   * @param peer1     The peer 1 class
+   * @param peer1Name The peer 1 name
    */
 
-  public SBPeerException(
-    final SBErrorCode errorCode,
-    final String message,
-    final List<String> inProblems)
+  public SBRuntimeConflictingPeer
   {
-    super(errorCode, message);
-    this.problems =
-      List.copyOf(Objects.requireNonNull(inProblems, "problems"));
+    Objects.requireNonNull(peer0, "peer0");
+    Objects.requireNonNull(peer0Name, "peer0Name");
+    Objects.requireNonNull(peer1, "peer1");
+    Objects.requireNonNull(peer1Name, "peer1Name");
   }
 }

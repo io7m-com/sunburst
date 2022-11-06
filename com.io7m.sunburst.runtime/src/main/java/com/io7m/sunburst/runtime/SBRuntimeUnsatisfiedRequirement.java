@@ -14,47 +14,34 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+package com.io7m.sunburst.runtime;
 
-package com.io7m.sunburst.model;
+import com.io7m.sunburst.model.SBPackageIdentifier;
 
-import com.io7m.sunburst.error_codes.SBErrorCode;
-import com.io7m.sunburst.error_codes.SBException;
-
-import java.util.List;
 import java.util.Objects;
 
 /**
- * An exception caused by ill-formed peers.
+ * A peer tried to import a package that doesn't exist in the inventory.
+ *
+ * @param importer The importer
+ * @param required The required package
  */
 
-public final class SBPeerException extends SBException
+public record SBRuntimeUnsatisfiedRequirement(
+  String importer,
+  SBPackageIdentifier required)
+  implements SBRuntimeProblemType
 {
-  private final List<String> problems;
-
   /**
-   * @return The problem list
-   */
-
-  public List<String> problems()
-  {
-    return this.problems;
-  }
-
-  /**
-   * An exception caused by ill-formed peers.
+   * A peer tried to import a package that doesn't exist in the inventory.
    *
-   * @param errorCode  The error code
-   * @param message    The message
-   * @param inProblems The problem list
+   * @param importer The importer
+   * @param required The required package
    */
 
-  public SBPeerException(
-    final SBErrorCode errorCode,
-    final String message,
-    final List<String> inProblems)
+  public SBRuntimeUnsatisfiedRequirement
   {
-    super(errorCode, message);
-    this.problems =
-      List.copyOf(Objects.requireNonNull(inProblems, "problems"));
+    Objects.requireNonNull(importer, "importer");
+    Objects.requireNonNull(required, "required");
   }
 }

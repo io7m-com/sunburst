@@ -14,47 +14,46 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-
-package com.io7m.sunburst.model;
-
-import com.io7m.sunburst.error_codes.SBErrorCode;
-import com.io7m.sunburst.error_codes.SBException;
+package com.io7m.sunburst.runtime;
 
 import java.util.List;
 import java.util.Objects;
 
 /**
- * An exception caused by ill-formed peers.
+ * The status of a runtime.
+ *
+ * @param problems The list of problems
  */
 
-public final class SBPeerException extends SBException
+public record SBRuntimeStatus(
+  List<SBRuntimeProblemType> problems)
 {
-  private final List<String> problems;
-
   /**
-   * @return The problem list
+   * The status of a runtime.
+   *
+   * @param problems The list of problems
    */
 
-  public List<String> problems()
+  public SBRuntimeStatus
   {
-    return this.problems;
+    Objects.requireNonNull(problems, "problems");
   }
 
   /**
-   * An exception caused by ill-formed peers.
-   *
-   * @param errorCode  The error code
-   * @param message    The message
-   * @param inProblems The problem list
+   * @return {@code true} if the list of problems is empty
    */
 
-  public SBPeerException(
-    final SBErrorCode errorCode,
-    final String message,
-    final List<String> inProblems)
+  public boolean isSuccessful()
   {
-    super(errorCode, message);
-    this.problems =
-      List.copyOf(Objects.requireNonNull(inProblems, "problems"));
+    return this.problems.isEmpty();
+  }
+
+  /**
+   * @return {@code true} if the list of problems is not empty
+   */
+
+  public boolean isFailed()
+  {
+    return !this.isSuccessful();
   }
 }

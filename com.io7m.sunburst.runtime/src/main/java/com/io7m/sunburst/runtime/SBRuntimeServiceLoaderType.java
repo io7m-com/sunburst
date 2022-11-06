@@ -15,46 +15,30 @@
  */
 
 
-package com.io7m.sunburst.model;
-
-import com.io7m.sunburst.error_codes.SBErrorCode;
-import com.io7m.sunburst.error_codes.SBException;
+package com.io7m.sunburst.runtime;
 
 import java.util.List;
-import java.util.Objects;
+import java.util.ServiceConfigurationError;
+import java.util.function.Supplier;
 
 /**
- * An exception caused by ill-formed peers.
+ * An interface for loading services.
  */
 
-public final class SBPeerException extends SBException
+public interface SBRuntimeServiceLoaderType
 {
-  private final List<String> problems;
-
   /**
-   * @return The problem list
-   */
-
-  public List<String> problems()
-  {
-    return this.problems;
-  }
-
-  /**
-   * An exception caused by ill-formed peers.
+   * Load all services with the given type.
    *
-   * @param errorCode  The error code
-   * @param message    The message
-   * @param inProblems The problem list
+   * @param clazz The service type
+   * @param <T>   The type of service
+   *
+   * @return A list of service providers
+   *
+   * @throws ServiceConfigurationError On errors
+   * @see java.util.ServiceLoader#load(Class)
    */
 
-  public SBPeerException(
-    final SBErrorCode errorCode,
-    final String message,
-    final List<String> inProblems)
-  {
-    super(errorCode, message);
-    this.problems =
-      List.copyOf(Objects.requireNonNull(inProblems, "problems"));
-  }
+  <T> List<Supplier<T>> load(Class<T> clazz)
+    throws ServiceConfigurationError;
 }

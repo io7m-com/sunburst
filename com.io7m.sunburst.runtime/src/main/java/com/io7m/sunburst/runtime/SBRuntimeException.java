@@ -15,46 +15,58 @@
  */
 
 
-package com.io7m.sunburst.model;
+package com.io7m.sunburst.runtime;
 
 import com.io7m.sunburst.error_codes.SBErrorCode;
 import com.io7m.sunburst.error_codes.SBException;
 
-import java.util.List;
-import java.util.Objects;
-
 /**
- * An exception caused by ill-formed peers.
+ * The set of runtime exceptions.
  */
 
-public final class SBPeerException extends SBException
+public final class SBRuntimeException extends SBException
 {
-  private final List<String> problems;
-
   /**
-   * @return The problem list
+   * Construct an exception.
+   *
+   * @param inErrorCode The error code
+   * @param message     The error message
    */
 
-  public List<String> problems()
+  public SBRuntimeException(
+    final SBErrorCode inErrorCode,
+    final String message)
   {
-    return this.problems;
+    super(inErrorCode, message);
   }
 
   /**
-   * An exception caused by ill-formed peers.
+   * Construct an exception.
    *
-   * @param errorCode  The error code
-   * @param message    The message
-   * @param inProblems The problem list
+   * @param inErrorCode The error code
+   * @param message     The error message
+   * @param cause       The cause
    */
 
-  public SBPeerException(
-    final SBErrorCode errorCode,
+  public SBRuntimeException(
+    final SBErrorCode inErrorCode,
     final String message,
-    final List<String> inProblems)
+    final Throwable cause)
   {
-    super(errorCode, message);
-    this.problems =
-      List.copyOf(Objects.requireNonNull(inProblems, "problems"));
+    super(inErrorCode, message, cause);
+  }
+
+  /**
+   * Construct an exception.
+   *
+   * @param inErrorCode The error code
+   * @param cause       The cause
+   */
+
+  public SBRuntimeException(
+    final SBErrorCode inErrorCode,
+    final Throwable cause)
+  {
+    super(inErrorCode, cause);
   }
 }

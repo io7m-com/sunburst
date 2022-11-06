@@ -14,47 +14,30 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+package com.io7m.sunburst.runtime;
 
-package com.io7m.sunburst.model;
+import com.io7m.sunburst.inventory.api.SBInventoryException;
 
-import com.io7m.sunburst.error_codes.SBErrorCode;
-import com.io7m.sunburst.error_codes.SBException;
-
-import java.util.List;
 import java.util.Objects;
 
 /**
- * An exception caused by ill-formed peers.
+ * The inventory crashed.
+ *
+ * @param exception The exception
  */
 
-public final class SBPeerException extends SBException
+public record SBRuntimeInventoryProblem(
+  SBInventoryException exception)
+  implements SBRuntimeProblemType
 {
-  private final List<String> problems;
-
   /**
-   * @return The problem list
-   */
-
-  public List<String> problems()
-  {
-    return this.problems;
-  }
-
-  /**
-   * An exception caused by ill-formed peers.
+   * The inventory crashed.
    *
-   * @param errorCode  The error code
-   * @param message    The message
-   * @param inProblems The problem list
+   * @param exception The exception
    */
 
-  public SBPeerException(
-    final SBErrorCode errorCode,
-    final String message,
-    final List<String> inProblems)
+  public SBRuntimeInventoryProblem
   {
-    super(errorCode, message);
-    this.problems =
-      List.copyOf(Objects.requireNonNull(inProblems, "problems"));
+    Objects.requireNonNull(exception, "exception");
   }
 }

@@ -23,5 +23,7 @@ module com.io7m.sunburst.model
   requires static org.osgi.annotation.bundle;
   requires static org.osgi.annotation.versioning;
 
+  requires transitive com.io7m.sunburst.error_codes;
+
   exports com.io7m.sunburst.model;
 }

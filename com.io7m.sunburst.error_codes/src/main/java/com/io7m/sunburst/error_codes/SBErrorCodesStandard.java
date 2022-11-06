@@ -86,6 +86,27 @@ public final class SBErrorCodesStandard
   public static final SBErrorCode ERROR_PATH_NONEXISTENT =
     new SBErrorCode("error-path-nonexistent");
 
+  /**
+   * An import is missing for a peer.
+   */
+
+  public static final SBErrorCode ERROR_PEER_IMPORT_MISSING =
+    new SBErrorCode("error-peer-import-missing");
+
+  /**
+   * A peer is missing.
+   */
+
+  public static final SBErrorCode ERROR_PEER_MISSING =
+    new SBErrorCode("error-peer-missing");
+
+  /**
+   * A peer is misconfigured.
+   */
+
+  public static final SBErrorCode ERROR_PEER_MISCONFIGURED =
+    new SBErrorCode("error-peer-misconfigured");
+
   private SBErrorCodesStandard()
   {
 

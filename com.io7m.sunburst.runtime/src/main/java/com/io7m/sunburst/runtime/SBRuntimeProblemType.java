@@ -14,30 +14,18 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.sunburst.inventory.api;
+
+package com.io7m.sunburst.runtime;
 
 /**
- * Read-only access to an inventory.
+ * The type of problems that can occur when trying to set up a runtime context.
  */
 
-public interface SBInventoryReadableType extends AutoCloseable
+public sealed interface SBRuntimeProblemType
+  permits SBRuntimeBrokenPeerFactory,
+  SBRuntimeConflictingPeer,
+  SBRuntimeInventoryProblem,
+  SBRuntimeUnsatisfiedRequirement
 {
-  /**
-   * @return The inventory configuration
-   */
 
-  SBInventoryConfiguration configuration();
-
-  /**
-   * @return A new transaction for reading
-   *
-   * @throws SBInventoryException On errors
-   */
-
-  SBTransactionReadableType openTransactionReadable()
-    throws SBInventoryException;
-
-  @Override
-  void close()
-    throws SBInventoryException;
 }
