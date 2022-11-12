@@ -1,4 +1,4 @@
-name: sunburst
+name: main.linux.temurin.lts
 
 on:
   push:
