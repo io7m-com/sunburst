@@ -6,10 +6,3 @@ sunburst
 [![Codecov](https://img.shields.io/codecov/c/github/io7m/sunburst.svg?style=flat-square)](https://codecov.io/gh/io7m/sunburst)
 
 ![sunburst](./src/site/resources/sunburst.jpg?raw=true)
-
-| JVM             | Platform | Status |
-|-----------------|----------|--------|
-| OpenJDK LTS     | Linux    | [![Build (OpenJDK LTS, Linux)](https://img.shields.io/github/workflow/status/io7m/sunburst/main-openjdk_lts-linux)](https://github.com/io7m/sunburst/actions?query=workflow%3Amain-openjdk_lts-linux) |
-| OpenJDK Current | Linux    | [![Build (OpenJDK Current, Linux)](https://img.shields.io/github/workflow/status/io7m/sunburst/main-openjdk_current-linux)](https://github.com/io7m/sunburst/actions?query=workflow%3Amain-openjdk_current-linux)
-| OpenJDK Current | Windows  | [![Build (OpenJDK Current, Windows)](https://img.shields.io/github/workflow/status/io7m/sunburst/main-openjdk_current-windows)](https://github.com/io7m/sunburst/actions?query=workflow%3Amain-openjdk_current-windows)
-
