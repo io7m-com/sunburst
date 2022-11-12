@@ -22,10 +22,11 @@ import com.io7m.anethum.common.ParseSeverity;
 import com.io7m.anethum.common.ParseStatus;
 import com.io7m.jlexing.core.LexicalPosition;
 import com.io7m.sunburst.model.SBPackageIdentifier;
-import com.io7m.sunburst.model.SBPackageVersion;
 import com.io7m.sunburst.model.SBPeer;
 import com.io7m.sunburst.model.SBPeerException;
 import com.io7m.sunburst.xml.peers.jaxb.Peer;
+import com.io7m.verona.core.Version;
+import com.io7m.verona.core.VersionQualifier;
 import jakarta.xml.bind.JAXBContext;
 
 import javax.xml.XMLConstants;
@@ -170,14 +171,22 @@ public final class SBPeerParsers
         SBPeer.builder(p.getName());
 
       for (final var i : p.getImport()) {
+        final var iv = i.getQualifier();
+        final Optional<VersionQualifier> q;
+        if (iv != null) {
+          q = Optional.of(new VersionQualifier(iv));
+        } else {
+          q = Optional.empty();
+        }
+
         b.addImport(
           new SBPackageIdentifier(
             i.getName(),
-            new SBPackageVersion(
+            new Version(
               (int) i.getMajor(),
               (int) i.getMinor(),
               (int) i.getPatch(),
-              Objects.requireNonNullElse(i.getQualifier(), "")
+              q
             )
           )
         );

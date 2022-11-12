@@ -24,8 +24,8 @@ import com.io7m.sunburst.model.SBHash;
 import com.io7m.sunburst.model.SBPackage;
 import com.io7m.sunburst.model.SBPackageEntry;
 import com.io7m.sunburst.model.SBPackageIdentifier;
-import com.io7m.sunburst.model.SBPackageVersion;
 import com.io7m.sunburst.model.SBPath;
+import com.io7m.verona.core.Version;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.io.input.BrokenInputStream;
 import org.junit.jupiter.api.AfterEach;
@@ -95,7 +95,7 @@ public final class SBInventoriesTest
     final var packageV = new SBPackage(
       new SBPackageIdentifier(
         "com.io7m.example.main",
-        new SBPackageVersion(1, 0, 0, "")
+        Version.of(1, 0, 0)
       ),
       Map.ofEntries(
         Map.entry("title", "A title."),
@@ -358,7 +358,7 @@ public final class SBInventoriesTest
     final var packageV = new SBPackage(
       new SBPackageIdentifier(
         "com.io7m.example.main",
-        new SBPackageVersion(1, 0, 0, "")
+        Version.of(1, 0, 0)
       ),
       new TreeMap<>(),
       new TreeMap<>(entryMap)
@@ -483,7 +483,7 @@ public final class SBInventoriesTest
     final var packageV = new SBPackage(
       new SBPackageIdentifier(
         "com.io7m.example.main",
-        new SBPackageVersion(1, 0, 0, "")
+        Version.of(1, 0, 0)
       ),
       Map.ofEntries(
         Map.entry("title", "A title."),
@@ -536,7 +536,7 @@ public final class SBInventoriesTest
         assertEquals(Optional.empty(), t.packageGet(
           new SBPackageIdentifier(
             "com.io7m.example.main",
-            new SBPackageVersion(1, 0, 0, "")
+            Version.of(1, 0, 0)
           )
         ));
       }
@@ -650,7 +650,7 @@ public final class SBInventoriesTest
     final var packageBefore = new SBPackage(
       new SBPackageIdentifier(
         "com.io7m.example.main",
-        new SBPackageVersion(1, 0, 0, "SNAPSHOT")
+        Version.of(1, 0, 0, "SNAPSHOT")
       ),
       Map.ofEntries(
         Map.entry("title", "A title."),
@@ -662,7 +662,7 @@ public final class SBInventoriesTest
     final var packageAfter = new SBPackage(
       new SBPackageIdentifier(
         "com.io7m.example.main",
-        new SBPackageVersion(1, 0, 0, "SNAPSHOT")
+        Version.of(1, 0, 0, "SNAPSHOT")
       ),
       Map.ofEntries(
         Map.entry("title", "A title after."),

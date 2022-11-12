@@ -25,7 +25,6 @@ import com.io7m.sunburst.model.SBHash;
 import com.io7m.sunburst.model.SBPackage;
 import com.io7m.sunburst.model.SBPackageEntry;
 import com.io7m.sunburst.model.SBPackageIdentifier;
-import com.io7m.sunburst.model.SBPackageVersion;
 import com.io7m.sunburst.model.SBPath;
 import com.io7m.sunburst.model.SBPeer;
 import com.io7m.sunburst.model.SBPeerException;
@@ -37,6 +36,7 @@ import com.io7m.sunburst.runtime.SBRuntimeServiceLoaderType;
 import com.io7m.sunburst.runtime.SBRuntimeUnsatisfiedRequirement;
 import com.io7m.sunburst.runtime.Sunburst;
 import com.io7m.sunburst.runtime.spi.SBPeerFactoryType;
+import com.io7m.verona.core.Version;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -547,7 +547,7 @@ public final class SBRuntimeContextTest
     final var packageIdentifier =
       new SBPackageIdentifier(
         "a.b.c",
-        new SBPackageVersion(1, 0, 0, "")
+        Version.of(1, 0, 0)
       );
 
     final var rng = SecureRandom.getInstanceStrong();

@@ -18,10 +18,11 @@
 package com.io7m.sunburst.tests;
 
 import com.io7m.sunburst.model.SBPackageIdentifier;
-import com.io7m.sunburst.model.SBPackageVersion;
+import com.io7m.verona.core.Version;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -30,12 +31,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class SBPackageNameTest
 {
-  private static final SBPackageVersion VERSION =
-    new SBPackageVersion(
+  private static final Version VERSION =
+    new Version(
       1,
       0,
       0,
-      ""
+      Optional.empty()
     );
 
   record Case(String name)

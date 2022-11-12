@@ -32,13 +32,14 @@ import com.io7m.sunburst.model.SBHashAlgorithm;
 import com.io7m.sunburst.model.SBPackage;
 import com.io7m.sunburst.model.SBPackageEntry;
 import com.io7m.sunburst.model.SBPackageIdentifier;
-import com.io7m.sunburst.model.SBPackageVersion;
 import com.io7m.sunburst.model.SBPath;
 import com.io7m.trasco.api.TrException;
 import com.io7m.trasco.api.TrExecutorConfiguration;
 import com.io7m.trasco.api.TrSchemaRevisionSet;
 import com.io7m.trasco.vanilla.TrExecutors;
 import com.io7m.trasco.vanilla.TrSchemaRevisionSetParsers;
+import com.io7m.verona.core.Version;
+import com.io7m.verona.core.VersionQualifier;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Query;
@@ -552,13 +553,21 @@ public final class SBInventory implements SBInventoryType
     private static SBPackageIdentifier mapPackageIdentifier(
       final Record6<Long, String, Long, Long, Long, String> rec)
     {
+      final var qText = rec.get(PACKAGES.VERSION_QUALIFIER);
+      final Optional<VersionQualifier> q;
+      if (!qText.isEmpty()) {
+        q = Optional.of(new VersionQualifier(qText));
+      } else {
+        q = Optional.empty();
+      }
+
       return new SBPackageIdentifier(
         rec.get(PACKAGES.NAME),
-        new SBPackageVersion(
+        new Version(
           rec.get(PACKAGES.VERSION_MAJOR).intValue(),
           rec.get(PACKAGES.VERSION_MINOR).intValue(),
           rec.get(PACKAGES.VERSION_PATCH).intValue(),
-          rec.get(PACKAGES.VERSION_QUALIFIER)
+          q
         )
       );
     }
@@ -907,12 +916,17 @@ public final class SBInventory implements SBInventoryType
       final var version =
         identifier.version();
 
+      final var qText =
+        version.qualifier()
+          .map(VersionQualifier::text)
+          .orElse("");
+
       return DSL.and(
         PACKAGES.NAME.eq(identifier.name()),
         PACKAGES.VERSION_MAJOR.eq(toUnsignedLong(version.major())),
         PACKAGES.VERSION_MINOR.eq(toUnsignedLong(version.minor())),
         PACKAGES.VERSION_PATCH.eq(toUnsignedLong(version.patch())),
-        PACKAGES.VERSION_QUALIFIER.eq(version.qualifier())
+        PACKAGES.VERSION_QUALIFIER.eq(qText)
       );
     }
 
@@ -1018,15 +1032,20 @@ public final class SBInventory implements SBInventoryType
       final HashMap<SBHash, Long> blobIds,
       final OffsetDateTime timeNow,
       final String name,
-      final SBPackageVersion version)
+      final Version version)
     {
+      final var qualifierText =
+        version.qualifier()
+          .map(VersionQualifier::text)
+          .orElse("");
+
       final var packageId =
         context.insertInto(PACKAGES)
           .set(PACKAGES.NAME, name)
           .set(PACKAGES.VERSION_MAJOR, toUnsignedLong(version.major()))
           .set(PACKAGES.VERSION_MINOR, toUnsignedLong(version.minor()))
           .set(PACKAGES.VERSION_PATCH, toUnsignedLong(version.patch()))
-          .set(PACKAGES.VERSION_QUALIFIER, version.qualifier())
+          .set(PACKAGES.VERSION_QUALIFIER, qualifierText)
           .set(PACKAGES.UPDATED, timeNow.toString())
           .returning(PACKAGES.ID)
           .fetchOne(PACKAGES.ID);

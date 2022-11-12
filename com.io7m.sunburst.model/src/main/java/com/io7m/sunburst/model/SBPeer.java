@@ -16,6 +16,8 @@
 
 package com.io7m.sunburst.model;
 
+import com.io7m.verona.core.Version;
+
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.text.MessageFormat;
@@ -39,11 +41,11 @@ public final class SBPeer
     "/com/io7m/sunburst/model/Messages.properties";
 
   private final String packageName;
-  private final Map<String, SBPackageVersion> imports;
+  private final Map<String, Version> imports;
 
   private SBPeer(
     final String inPackageName,
-    final Map<String, SBPackageVersion> inImports)
+    final Map<String, Version> inImports)
   {
     this.packageName =
       Objects.requireNonNull(inPackageName, "inPackageName");
@@ -102,7 +104,7 @@ public final class SBPeer
    * @return The map of package names to package versions
    */
 
-  public Map<String, SBPackageVersion> imports()
+  public Map<String, Version> imports()
   {
     return this.imports;
   }
@@ -166,7 +168,7 @@ public final class SBPeer
   {
     private final Strings strings;
     private final String packageName;
-    private final HashMap<String, SBPackageVersion> imports;
+    private final HashMap<String, Version> imports;
     private final ArrayList<String> problems;
 
     private Builder(

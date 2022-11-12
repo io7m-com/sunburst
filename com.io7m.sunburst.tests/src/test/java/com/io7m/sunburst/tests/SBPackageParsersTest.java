@@ -40,6 +40,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HexFormat;
 import java.util.List;
+import java.util.Optional;
 
 import static com.io7m.sunburst.model.SBHashAlgorithm.SHA2_256;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -159,7 +160,7 @@ public final class SBPackageParsersTest
     assertEquals(1, id.version().major());
     assertEquals(0, id.version().minor());
     assertEquals(0, id.version().patch());
-    assertEquals("", id.version().qualifier());
+    assertEquals(Optional.empty(), id.version().qualifier());
 
     final var meta = pack.metadata();
     assertEquals(

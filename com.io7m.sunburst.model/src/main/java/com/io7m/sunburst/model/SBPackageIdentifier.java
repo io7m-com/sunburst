@@ -16,6 +16,10 @@
 
 package com.io7m.sunburst.model;
 
+import com.io7m.verona.core.Version;
+import com.io7m.verona.core.VersionException;
+import com.io7m.verona.core.VersionParser;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -29,7 +33,7 @@ import java.util.Objects;
 
 public record SBPackageIdentifier(
   String name,
-  SBPackageVersion version)
+  Version version)
   implements Comparable<SBPackageIdentifier>
 {
   /**
@@ -87,9 +91,13 @@ public record SBPackageIdentifier(
         "Received: \"%s\", Expected: <package-name>:<version>"
           .formatted(text));
     }
-    return new SBPackageIdentifier(
-      segments.get(0),
-      SBPackageVersion.parse(segments.get(1))
-    );
+    try {
+      return new SBPackageIdentifier(
+        segments.get(0),
+        VersionParser.parse(segments.get(1))
+      );
+    } catch (final VersionException e) {
+      throw new IllegalArgumentException(e.getMessage(), e.getCause());
+    }
   }
 }

@@ -43,6 +43,10 @@
       <groupId>com.io7m.jodist</groupId>
       <artifactId>com.io7m.jodist</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.io7m.verona</groupId>
+      <artifactId>com.io7m.verona.core</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.osgi</groupId>

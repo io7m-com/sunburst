@@ -26,11 +26,11 @@ import com.io7m.jodist.TypeSpec;
 import com.io7m.sunburst.codegen.SBCodeGeneratorConfiguration;
 import com.io7m.sunburst.codegen.SBCodeGeneratorType;
 import com.io7m.sunburst.model.SBPackageIdentifier;
-import com.io7m.sunburst.model.SBPackageVersion;
 import com.io7m.sunburst.model.SBPeer;
 import com.io7m.sunburst.model.SBPeerException;
 import com.io7m.sunburst.runtime.spi.SBPeerFactoryType;
 import com.io7m.sunburst.xml.peers.SBPeerSerializerFactoryType;
+import com.io7m.verona.core.Version;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -213,18 +213,32 @@ public final class SBCodeGenerator implements SBCodeGeneratorType
     for (final var packName : importPackages) {
       final var v = importMap.get(packName);
 
-      final var initializer =
-        CodeBlock.builder()
+      final CodeBlock initializer;
+      final var qOpt = v.qualifier();
+      if (qOpt.isPresent()) {
+        initializer = CodeBlock.builder()
           .add(
-            "new $T($S, new $T($L,$L,$L,$S))",
+            "new $T($S, $T.of($L,$L,$L,$S))",
             SBPackageIdentifier.class,
             packName,
-            SBPackageVersion.class,
+            Version.class,
             Integer.toUnsignedString(v.major()),
             Integer.toUnsignedString(v.minor()),
             Integer.toUnsignedString(v.patch()),
-            v.qualifier()
+            qOpt.get().text()
           ).build();
+      } else {
+        initializer = CodeBlock.builder()
+          .add(
+            "new $T($S, $T.of($L,$L,$L))",
+            SBPackageIdentifier.class,
+            packName,
+            Version.class,
+            Integer.toUnsignedString(v.major()),
+            Integer.toUnsignedString(v.minor()),
+            Integer.toUnsignedString(v.patch())
+          ).build();
+      }
 
       final var fieldName = nameGen.freshName();
       names.add(fieldName);

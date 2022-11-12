@@ -27,13 +27,14 @@ import com.io7m.sunburst.model.SBHashAlgorithm;
 import com.io7m.sunburst.model.SBPackage;
 import com.io7m.sunburst.model.SBPackageEntry;
 import com.io7m.sunburst.model.SBPackageIdentifier;
-import com.io7m.sunburst.model.SBPackageVersion;
 import com.io7m.sunburst.model.SBPath;
 import com.io7m.sunburst.xml.packages.jaxb.Entries;
 import com.io7m.sunburst.xml.packages.jaxb.Entry;
 import com.io7m.sunburst.xml.packages.jaxb.Identifier;
 import com.io7m.sunburst.xml.packages.jaxb.Metadata;
 import com.io7m.sunburst.xml.packages.jaxb.Package;
+import com.io7m.verona.core.Version;
+import com.io7m.verona.core.VersionQualifier;
 import jakarta.xml.bind.JAXBContext;
 
 import javax.xml.XMLConstants;
@@ -219,13 +220,22 @@ public final class SBPackageParsers
       final Identifier identifier)
     {
       final var version = identifier.getVersion();
+
+      final var qs = version.getQualifier();
+      final Optional<VersionQualifier> q;
+      if (qs != null) {
+        q = Optional.of(new VersionQualifier(qs));
+      } else {
+        q = Optional.empty();
+      }
+
       return new SBPackageIdentifier(
         identifier.getName(),
-        new SBPackageVersion(
+        new Version(
           (int) version.getMajor(),
           (int) version.getMinor(),
           (int) version.getPatch(),
-          Objects.requireNonNullElse(version.getQualifier(), "")
+          q
         )
       );
     }

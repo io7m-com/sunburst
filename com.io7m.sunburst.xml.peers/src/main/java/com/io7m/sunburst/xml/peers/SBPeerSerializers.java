@@ -95,10 +95,7 @@ public final class SBPeerSerializers
           i.setMajor(toUnsignedLong(v.major()));
           i.setMinor(toUnsignedLong(v.minor()));
           i.setPatch(toUnsignedLong(v.patch()));
-
-          if (!Objects.equals(v.qualifier(), "")) {
-            i.setQualifier(v.qualifier());
-          }
+          v.qualifier().ifPresent(q -> i.setQualifier(q.text()));
 
           importList.add(i);
         }

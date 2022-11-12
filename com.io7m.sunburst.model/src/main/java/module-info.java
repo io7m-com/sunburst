@@ -24,6 +24,7 @@ module com.io7m.sunburst.model
   requires static org.osgi.annotation.versioning;
 
   requires transitive com.io7m.sunburst.error_codes;
+  requires transitive com.io7m.verona.core;
 
   exports com.io7m.sunburst.model;
 }

@@ -176,10 +176,7 @@ public final class SBPackageSerializers
       v.setMajor(toUnsignedLong(iv.major()));
       v.setMinor(toUnsignedLong(iv.minor()));
       v.setPatch(toUnsignedLong(iv.patch()));
-
-      if (!iv.qualifier().isEmpty()) {
-        v.setQualifier(iv.qualifier());
-      }
+      iv.qualifier().ifPresent(q -> v.setQualifier(q.text()));
 
       final var id = this.objects.createIdentifier();
       id.setName(identifier.name());
