@@ -35,7 +35,7 @@
   <simpleType name="QualifierT">
     <annotation>
       <documentation>
-        The type of package version qualifiers. See com.io7m.sunburst.model.SBPackageVersion.
+        The type of package version qualifiers. See com.io7m.verona.core.VersionQualifier.
       </documentation>
     </annotation>
     <restriction base="string">
