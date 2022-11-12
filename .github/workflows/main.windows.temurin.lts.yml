@@ -1,4 +1,4 @@
-name: main.windows.temurin.current
+name: main.windows.temurin.lts
 
 on:
   push:
