@@ -1,4 +1,4 @@
-name: main.linux.temurin.lts
+name: main.windows.temurin.current
 
 on:
   push:
@@ -8,17 +8,13 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
       - name: JDK
         uses: actions/setup-java@v3
         with:
-          java-version: 17
+          java-version: 19
           distribution: 'temurin'
       - name: Build
         run: mvn --errors clean verify site
-      - name: Coverage
-        uses: codecov/codecov-action@v1
-        with:
-          file: com.io7m.sunburst.tests/target/site/jacoco-aggregate/jacoco.xml
