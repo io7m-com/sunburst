@@ -1,4 +1,4 @@
-name: main.linux.temurin.current
+name: sunburst
 
 on:
   push:
