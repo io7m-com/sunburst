@@ -9,7 +9,7 @@
   <parent>
     <artifactId>com.io7m.sunburst</artifactId>
     <groupId>com.io7m.sunburst</groupId>
-    <version>0.0.1</version>
+    <version>0.0.2-SNAPSHOT</version>
   </parent>
 
   <artifactId>com.io7m.sunburst.xml.packages</artifactId>
