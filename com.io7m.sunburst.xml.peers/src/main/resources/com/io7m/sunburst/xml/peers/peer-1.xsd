@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  Copyright © 2022 Mark Raynsford <code@io7m.com> https://www.io7m.com
+
+  Permission to use, copy, modify, and/or distribute this software for any
+  purpose with or without fee is hereby granted, provided that the above
+  copyright notice and this permission notice appear in all copies.
+
+  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+  WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+  MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+  SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+  WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+  ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
+  IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+-->
+
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="urn:com.io7m.sunburst:peer:1"
+        xmlns:p="urn:com.io7m.sunburst:peer:1">
+
+  <simpleType name="PackageVersionQualifierT">
+    <annotation>
+      <documentation>
+        The type of package version qualifiers. See com.io7m.sunburst.model.SBPackageVersion.
+      </documentation>
+    </annotation>
+    <restriction base="string">
+      <pattern value="[A-Za-z0-9\-]+(\.[A-Za-z0-9\-]+)*"/>
+      <maxLength value="255"/>
+    </restriction>
+  </simpleType>
+
+  <simpleType name="PackageNameT">
+    <annotation>
+      <documentation>
+        The type of package names. See com.io7m.sunburst.model.SBPackageIdentifier.
+      </documentation>
+    </annotation>
+    <restriction base="string">
+      <pattern value="[a-z][a-z0-9_-]*(\.[a-z][a-z0-9_-]*)*"/>
+      <maxLength value="255"/>
+    </restriction>
+  </simpleType>
+
+  <element name="Import">
+    <annotation>
+      <documentation>
+        A unique package import.
+      </documentation>
+    </annotation>
+    <complexType>
+      <attribute name="Name"
+                 type="p:PackageNameT"
+                 use="required"/>
+      <attribute name="Major"
+                 type="unsignedInt"
+                 use="required"/>
+      <attribute name="Minor"
+                 type="unsignedInt"
+                 use="required"/>
+      <attribute name="Patch"
+                 type="unsignedInt"
+                 use="required"/>
+      <attribute name="Qualifier"
+                 type="p:PackageVersionQualifierT"
+                 use="optional"/>
+    </complexType>
+  </element>
+
+  <element name="Peer">
+    <annotation>
+      <documentation>
+        The top-level peer declaration.
+      </documentation>
+    </annotation>
+    <complexType>
+      <sequence minOccurs="0" maxOccurs="unbounded">
+        <element ref="p:Import"/>
+      </sequence>
+      <attribute name="Name"
+                 type="p:PackageNameT"
+                 use="required"/>
+    </complexType>
+    <key name="ImportPackageKey">
+      <selector xpath="p:Import"/>
+      <field xpath="@Name"/>
+    </key>
+  </element>
+
+</schema>

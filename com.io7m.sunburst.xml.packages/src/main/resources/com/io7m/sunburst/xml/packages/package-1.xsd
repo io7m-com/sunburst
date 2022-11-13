@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  Copyright © 2022 Mark Raynsford <code@io7m.com> https://www.io7m.com
+
+  Permission to use, copy, modify, and/or distribute this software for any
+  purpose with or without fee is hereby granted, provided that the above
+  copyright notice and this permission notice appear in all copies.
+
+  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+  WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+  MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+  SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+  WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+  ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
+  IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+-->
+
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="urn:com.io7m.sunburst:package:1"
+        xmlns:p="urn:com.io7m.sunburst:package:1">
+
+  <simpleType name="NameT">
+    <annotation>
+      <documentation>
+        The type of package names. See com.io7m.sunburst.model.SBPackageIdentifier.
+      </documentation>
+    </annotation>
+    <restriction base="string">
+      <pattern value="[a-z][a-z0-9_-]*(\.[a-z][a-z0-9_-]*)*"/>
+      <maxLength value="255"/>
+    </restriction>
+  </simpleType>
+
+  <simpleType name="QualifierT">
+    <annotation>
+      <documentation>
+        The type of package version qualifiers. See com.io7m.verona.core.VersionQualifier.
+      </documentation>
+    </annotation>
+    <restriction base="string">
+      <pattern value="[A-Za-z0-9\-]+(\.[A-Za-z0-9\-]+)*"/>
+      <maxLength value="255"/>
+    </restriction>
+  </simpleType>
+
+  <simpleType name="HashAlgorithmT">
+    <annotation>
+      <documentation>
+        An index for a hash algorithm.
+      </documentation>
+    </annotation>
+    <restriction base="string">
+      <enumeration value="SHA2_256">
+        <annotation>
+          <documentation>
+            256-bit SHA-2.
+          </documentation>
+        </annotation>
+      </enumeration>
+    </restriction>
+  </simpleType>
+
+  <simpleType name="PathT">
+    <annotation>
+      <documentation>
+        A normalized path. Paths can be used to refer to objects inside packages without having to refer to them by
+        their hash value.
+      </documentation>
+    </annotation>
+    <restriction base="string">
+      <pattern value="/([a-z0-9_\\.-]+)(/[a-z0-9_\\.-]+)*"/>
+      <maxLength value="255"/>
+    </restriction>
+  </simpleType>
+
+  <simpleType name="HashT">
+    <annotation>
+      <documentation>
+        The base 16 representation of a hash value.
+      </documentation>
+    </annotation>
+    <restriction base="string">
+      <pattern value="[A-F0-9]+"/>
+      <maxLength value="255"/>
+    </restriction>
+  </simpleType>
+
+  <simpleType name="ContentTypeT">
+    <annotation>
+      <documentation>
+        An IANA media type. Purely informative, and not checked for validity.
+      </documentation>
+    </annotation>
+    <restriction base="string">
+      <maxLength value="255"/>
+    </restriction>
+  </simpleType>
+
+  <element name="Version">
+    <annotation>
+      <documentation>
+        A (semantic) package version. The major, minor, and patch version numbers correspond to the version number
+        components defined in the Semantic Versioning 2.0 specification. The optional qualifier can be used to indicate
+        alpha/beta/snapshot versions.
+      </documentation>
+    </annotation>
+    <complexType>
+      <attribute name="Major"
+                 type="unsignedInt"
+                 use="required"/>
+      <attribute name="Minor"
+                 type="unsignedInt"
+                 use="required"/>
+      <attribute name="Patch"
+                 type="unsignedInt"
+                 use="required"/>
+      <attribute name="Qualifier"
+                 type="p:QualifierT"
+                 use="optional"/>
+    </complexType>
+  </element>
+
+  <element name="Identifier">
+    <annotation>
+      <documentation>
+        A unique package identifier.
+      </documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element ref="p:Version"/>
+      </sequence>
+      <attribute name="Name"
+                 type="p:NameT"
+                 use="required"/>
+    </complexType>
+  </element>
+
+  <element name="Meta">
+    <annotation>
+      <documentation>
+        A metadata value.
+      </documentation>
+    </annotation>
+    <complexType>
+      <attribute name="Key"
+                 type="string"
+                 use="required"/>
+      <attribute name="Value"
+                 type="string"
+                 use="required"/>
+    </complexType>
+  </element>
+
+  <element name="Metadata">
+    <annotation>
+      <documentation>
+        The set of optional metadata values.
+      </documentation>
+    </annotation>
+    <complexType>
+      <sequence minOccurs="1"
+                maxOccurs="unbounded">
+        <element ref="p:Meta"/>
+      </sequence>
+    </complexType>
+    <key name="MetaKey">
+      <selector xpath="p:Meta"/>
+      <field xpath="@Key"/>
+    </key>
+  </element>
+
+  <element name="Entry">
+    <annotation>
+      <documentation>
+        An entry within a package. This is an opaque blob of data that can be uniquely identified by its hash, and
+        assigned a path that can be used to refer to it.
+      </documentation>
+    </annotation>
+    <complexType>
+      <attribute name="Path"
+                 type="p:PathT"
+                 use="required"/>
+      <attribute name="HashAlgorithm"
+                 type="p:HashAlgorithmT"
+                 use="required"/>
+      <attribute name="HashValue"
+                 type="p:HashT"
+                 use="required"/>
+      <attribute name="Size"
+                 type="unsignedLong"
+                 use="required"/>
+      <attribute name="ContentType"
+                 type="p:ContentTypeT"
+                 use="required"/>
+    </complexType>
+  </element>
+
+  <element name="Entries">
+    <annotation>
+      <documentation>
+        The entries within a package.
+      </documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element ref="p:Entry"
+                 minOccurs="1"
+                 maxOccurs="unbounded"/>
+      </sequence>
+    </complexType>
+    <key name="EntryKey">
+      <selector xpath="p:Entry"/>
+      <field xpath="@Path"/>
+    </key>
+  </element>
+
+  <element name="Package">
+    <annotation>
+      <documentation>
+        The top-level package declaration.
+      </documentation>
+    </annotation>
+    <complexType>
+      <sequence>
+        <element ref="p:Identifier"/>
+        <element ref="p:Metadata"
+                 minOccurs="0"
+                 maxOccurs="1"/>
+        <element ref="p:Entries"
+                 minOccurs="0"
+                 maxOccurs="1"/>
+      </sequence>
+    </complexType>
+  </element>
+
+</schema>
