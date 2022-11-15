@@ -2,3 +2,4 @@
 .idea
 pom.xml.versionsBackup
 target
+*.dia~

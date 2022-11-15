@@ -22,6 +22,7 @@
 
   <modules>
     <module>com.io7m.sunburst.codegen</module>
+    <module>com.io7m.sunburst.documentation</module>
     <module>com.io7m.sunburst.error_codes</module>
     <module>com.io7m.sunburst.inventory.api</module>
     <module>com.io7m.sunburst.inventory</module>
@@ -41,6 +42,7 @@
     <com.io7m.jxtrand.version>1.1.0</com.io7m.jxtrand.version>
     <com.io7m.trasco.version>0.0.6</com.io7m.trasco.version>
     <com.io7m.verona.version>0.0.2</com.io7m.verona.version>
+    <com.io7m.xstructural.version>1.8.0</com.io7m.xstructural.version>
     <io7m.api.previousVersion>0.0.1</io7m.api.previousVersion>
     <io7m.maven-api.version>3.8.6</io7m.maven-api.version>
     <jooq.version>3.17.4</jooq.version>
@@ -276,6 +278,11 @@
         <groupId>com.soebes.itf.jupiter.extension</groupId>
         <artifactId>itf-jupiter-extension</artifactId>
         <version>0.11.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.io7m.primogenitor</groupId>
+        <artifactId>com.io7m.primogenitor.support</artifactId>
+        <version>7.4.0</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

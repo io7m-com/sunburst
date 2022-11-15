@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Section xmlns="urn:com.io7m.structural:8:0"
+         title="Maven Plugin">
+
+  <Subsection title="Overview">
+    <Paragraph>
+      The <Term type="package">sunburst</Term> package provides a Maven plugin for inserting metadata into
+      jar files.
+    </Paragraph>
+  </Subsection>
+
+</Section>
