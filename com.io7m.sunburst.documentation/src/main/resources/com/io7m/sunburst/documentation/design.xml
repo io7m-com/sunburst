@@ -159,15 +159,22 @@
         declarations given in build scripts.
       </Paragraph>
       <Paragraph>
-        It is an error for a Java package to import two different versions of the same <Term type="package">sunburst
-      </Term> package, but it is acceptable for two different Java packages in the same application to import two
-        different versions of the same
+        It is an error for a Java package to import two different versions of the same
+        <Term type="package">sunburst</Term>
+        package, but it is acceptable for two different Java packages in the same application to import two different
+        versions of the same
         <Term type="package">sunburst</Term>
         package. Imports are not "inherited" in any form by Java packages; if a Java package
         <Term type="package">x.y.z</Term>
         imports a <Term type="package">sunburst</Term> package <Term type="package">a.b.c</Term>, this does not imply
         that classes in a hypothetical <Term type="package">x.y.z.w</Term> package also have access to
         <Term type="package">a.b.c</Term>.
+      </Paragraph>
+      <Paragraph>
+        The peers present in a given <Term type="term">jar</Term> file must be declared in
+        a file at <Term type="file">META-INF/Sunburst/Peers.xml</Term> inside the <Term type="term">jar</Term>.
+        The XML data must conform to the published
+        <Link target="b1f54c47-1e29-46d8-ada3-831da93ae73c">peers</Link> schema.
       </Paragraph>
     </Subsection>
     <Subsection title="Inventory"

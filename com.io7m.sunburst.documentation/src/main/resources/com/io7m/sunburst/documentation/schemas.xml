@@ -4,7 +4,7 @@
          title="Schemas"
          id="dfe2936e-4c69-4383-bd3d-7d677a93eb6f"
          xmlns:xi="http://www.w3.org/2001/XInclude">
-  <Subsection title="Peers">
+  <Subsection title="Peers" id="b1f54c47-1e29-46d8-ada3-831da93ae73c">
     <Paragraph>
       The schema for serialized peers is as follows:
     </Paragraph>
