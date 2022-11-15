@@ -39,6 +39,15 @@ public final class SunburstMojoIT
 
   @MavenGoal("${project.groupId}:com.io7m.sunburst.maven.plugin:${project.version}:generateSources")
   @MavenTest
+  void testMulti(
+    final MavenExecutionResult result)
+    throws Exception
+  {
+    assertTrue(result.isSuccessful());
+  }
+
+  @MavenGoal("${project.groupId}:com.io7m.sunburst.maven.plugin:${project.version}:generateSources")
+  @MavenTest
   void testUnparseableImport(
     final MavenExecutionResult result)
     throws Exception

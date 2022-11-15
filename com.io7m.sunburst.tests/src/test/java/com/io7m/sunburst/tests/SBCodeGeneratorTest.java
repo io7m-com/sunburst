@@ -66,8 +66,10 @@ public final class SBCodeGeneratorTest
     this.generators.createGenerator(
       new SBCodeGeneratorConfiguration(
         this.directory,
-        SBPeer.builder("com.io7m.example")
-          .build()
+        List.of(
+          SBPeer.builder("com.io7m.example")
+            .build()
+        )
       )).execute();
 
     final var generatedJavaFile =
@@ -84,7 +86,7 @@ public final class SBCodeGeneratorTest
     final var generatedPeerFile =
       this.directory.resolve("META-INF")
         .resolve("Sunburst")
-        .resolve("Peer.xml");
+        .resolve("Peers.xml");
 
     this.parsers.parseFile(generatedPeerFile);
     assertTrue(Files.exists(generatedJavaFile));
@@ -103,11 +105,13 @@ public final class SBCodeGeneratorTest
     this.generators.createGenerator(
       new SBCodeGeneratorConfiguration(
         this.directory,
-        SBPeer.builder("com.io7m.example")
-          .addImportText("com.io7m.ex0:1.0.0")
-          .addImportText("com.io7m.ex1:1.2.0")
-          .addImportText("com.io7m.ex2:0.3.1-SNAPSHOT")
-          .build()
+        List.of(
+          SBPeer.builder("com.io7m.example")
+            .addImportText("com.io7m.ex0:1.0.0")
+            .addImportText("com.io7m.ex1:1.2.0")
+            .addImportText("com.io7m.ex2:0.3.1-SNAPSHOT")
+            .build()
+        )
       )).execute();
 
     final var generatedJavaFile =
@@ -124,7 +128,7 @@ public final class SBCodeGeneratorTest
     final var generatedPeerFile =
       this.directory.resolve("META-INF")
         .resolve("Sunburst")
-        .resolve("Peer.xml");
+        .resolve("Peers.xml");
 
     this.parsers.parseFile(generatedPeerFile);
     assertTrue(Files.exists(generatedJavaFile));
@@ -134,6 +138,66 @@ public final class SBCodeGeneratorTest
     );
 
     this.compileJava(generatedJavaFile);
+  }
+
+  @Test
+  public void testBasicMulti()
+    throws Exception
+  {
+    this.generators.createGenerator(
+      new SBCodeGeneratorConfiguration(
+        this.directory,
+        List.of(
+          SBPeer.builder("com.io7m.example")
+            .addImportText("com.io7m.ex0:1.0.0")
+            .addImportText("com.io7m.ex1:1.2.0")
+            .addImportText("com.io7m.ex2:0.3.1-SNAPSHOT")
+            .build(),
+          SBPeer.builder("com.io7m.example.w")
+            .addImportText("com.io7m.ex0:1.0.0")
+            .addImportText("com.io7m.ex1:1.2.0")
+            .addImportText("com.io7m.ex2:0.3.1-SNAPSHOT")
+            .build()
+        )
+      )).execute();
+
+    final var generatedJavaFile0 =
+      this.directory.resolve("com")
+        .resolve("io7m")
+        .resolve("example")
+        .resolve("SunburstPeer.java");
+
+    final var generatedJavaFile1 =
+      this.directory.resolve("com")
+        .resolve("io7m")
+        .resolve("example")
+        .resolve("w")
+        .resolve("SunburstPeer.java");
+
+    final var generatedServiceFile =
+      this.directory.resolve("META-INF")
+        .resolve("services")
+        .resolve("com.io7m.sunburst.runtime.spi.SBPeerFactoryType");
+
+    final var generatedPeerFile =
+      this.directory.resolve("META-INF")
+        .resolve("Sunburst")
+        .resolve("Peers.xml");
+
+    this.parsers.parseFile(generatedPeerFile);
+    assertTrue(Files.exists(generatedJavaFile0));
+    assertTrue(Files.exists(generatedJavaFile1));
+
+    assertEquals(
+      List.of(
+        "com.io7m.example.SunburstPeer",
+        "com.io7m.example.w.SunburstPeer"
+      ),
+      Files.readAllLines(generatedServiceFile, UTF_8)
+    );
+
+    this.compileJava(generatedJavaFile0);
+    this.compileJava(generatedJavaFile1);
   }
 
   private void compileJava(

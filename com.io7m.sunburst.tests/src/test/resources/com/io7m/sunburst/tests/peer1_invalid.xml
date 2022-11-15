@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<Peer xmlns="urn:com.io7m.sunburst:peer:1"
-      Name="com.io7m.example">
-  <Import Name="a.b.c"
-          Major="1"
-          Minor="1"
-          Patch="0"/>
-  <Import Name="a.b.c"
-          Major="1"
-          Minor="2"
-          Patch="0"/>
-</Peer>
+<Peers xmlns="urn:com.io7m.sunburst:peer:1">
+  <Peer Name="com.io7m.example">
+    <Import Name="a.b.c"
+            Major="1"
+            Minor="1"
+            Patch="0"/>
+    <Import Name="a.b.c"
+            Major="1"
+            Minor="2"
+            Patch="0"/>
+  </Peer>
+</Peers>
+

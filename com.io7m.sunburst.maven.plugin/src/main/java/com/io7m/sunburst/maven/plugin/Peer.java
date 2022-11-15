@@ -14,20 +14,44 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+package com.io7m.sunburst.maven.plugin;
 
-package com.io7m.sunburst.xml.peers;
-
-import com.io7m.anethum.api.SerializerType;
-import com.io7m.sunburst.model.SBPeer;
-
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A peer serializer.
+ * A peer definition as it appears in Maven plugin configurations.
  */
 
-public interface SBPeerSerializerType
-  extends SerializerType<List<SBPeer>>
+public final class Peer
 {
+  private String packageName;
+  private List<String> imports = new ArrayList<>();
 
+  /**
+   * A peer definition as it appears in Maven plugin configurations.
+   */
+
+  public Peer()
+  {
+
+  }
+
+  /**
+   * @return The package name
+   */
+
+  public String packageName()
+  {
+    return this.packageName;
+  }
+
+  /**
+   * @return The imports
+   */
+
+  public List<String> imports()
+  {
+    return this.imports;
+  }
 }

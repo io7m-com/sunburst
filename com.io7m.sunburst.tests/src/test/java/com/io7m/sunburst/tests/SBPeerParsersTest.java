@@ -35,6 +35,7 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HexFormat;
+import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -151,7 +152,7 @@ public final class SBPeerParsersTest
   }
 
   private void roundTrip(
-    final SBPeer pack0)
+    final List<SBPeer> pack0)
     throws Exception
   {
     final var out =
@@ -166,11 +167,5 @@ public final class SBPeerParsersTest
       this.parsers.parse(URI.create("urn:1"), in);
 
     assertEquals(pack0, pack1);
-  }
-
-  private static byte[] unhex(
-    final String text)
-  {
-    return HexFormat.of().withUpperCase().parseHex(text);
   }
 }

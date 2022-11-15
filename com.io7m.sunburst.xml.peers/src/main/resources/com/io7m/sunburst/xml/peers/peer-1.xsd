@@ -72,7 +72,7 @@
   <element name="Peer">
     <annotation>
       <documentation>
-        The top-level peer declaration.
+        A peer declaration.
       </documentation>
     </annotation>
     <complexType>
@@ -85,6 +85,23 @@
     </complexType>
     <key name="ImportPackageKey">
       <selector xpath="p:Import"/>
+      <field xpath="@Name"/>
+    </key>
+  </element>
+
+  <element name="Peers">
+    <annotation>
+      <documentation>
+        The top-level peers declaration.
+      </documentation>
+    </annotation>
+    <complexType>
+      <sequence minOccurs="0" maxOccurs="unbounded">
+        <element ref="p:Peer"/>
+      </sequence>
+    </complexType>
+    <key name="PeerNameKey">
+      <selector xpath="p:Peer"/>
       <field xpath="@Name"/>
     </key>
   </element>

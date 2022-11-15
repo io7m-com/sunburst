@@ -27,6 +27,7 @@ import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
+import java.util.List;
 import java.util.Objects;
 
 import static java.lang.Boolean.TRUE;
@@ -79,25 +80,34 @@ public final class SBPeerSerializers
 
     @Override
     public void execute(
-      final SBPeer value)
+      final List<SBPeer> value)
       throws SerializeException
     {
       try {
-        final var p = this.objects.createPeer();
-        p.setName(value.packageName());
+        final var peers =
+          this.objects.createPeers();
+        final var peersOut =
+          peers.getPeer();
 
-        final var importList = p.getImport();
-        for (final var e : value.imports().entrySet()) {
-          final var i = new Import();
-          i.setName(e.getKey());
+        for (final var v : value) {
+          final var p = this.objects.createPeer();
+          p.setName(v.packageName());
 
-          final var v = e.getValue();
-          i.setMajor(toUnsignedLong(v.major()));
-          i.setMinor(toUnsignedLong(v.minor()));
-          i.setPatch(toUnsignedLong(v.patch()));
-          v.qualifier().ifPresent(q -> i.setQualifier(q.text()));
+          final var importList = p.getImport();
+          for (final var e : v.imports().entrySet()) {
+            final var i = new Import();
+            i.setName(e.getKey());
 
-          importList.add(i);
+            final var version = e.getValue();
+            i.setMajor(toUnsignedLong(version.major()));
+            i.setMinor(toUnsignedLong(version.minor()));
+            i.setPatch(toUnsignedLong(version.patch()));
+            version.qualifier().ifPresent(q -> i.setQualifier(q.text()));
+
+            importList.add(i);
+          }
+
+          peersOut.add(p);
         }
 
         final var context =
@@ -106,7 +116,7 @@ public final class SBPeerSerializers
           context.createMarshaller();
 
         marshaller.setProperty("jaxb.formatted.output", TRUE);
-        marshaller.marshal(p, this.stream);
+        marshaller.marshal(peers, this.stream);
       } catch (final JAXBException e) {
         throw new SerializeException(e.getMessage(), e);
       }

@@ -20,12 +20,14 @@ package com.io7m.sunburst.xml.peers;
 import com.io7m.anethum.api.ParserType;
 import com.io7m.sunburst.model.SBPeer;
 
+import java.util.List;
+
 /**
  * A peer parser.
  */
 
 public interface SBPeerParserType
-  extends ParserType<SBPeer>
+  extends ParserType<List<SBPeer>>
 {
 
 }

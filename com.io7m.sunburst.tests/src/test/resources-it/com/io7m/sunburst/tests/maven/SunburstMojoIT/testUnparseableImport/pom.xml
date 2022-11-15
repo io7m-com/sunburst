@@ -13,13 +13,17 @@
         <artifactId>com.io7m.sunburst.maven.plugin</artifactId>
         <version>${project.version}</version>
         <configuration>
-          <packageName>com.io7m.example</packageName>
-          <imports>
-            <import>unparseable</import>
-            <import>com.io7m.ex1:x:1.2.0</import>
-            <import>com.io7m.ex2</import>
-            <import>com.io7m.ex3:x.y.z</import>
-          </imports>
+          <peers>
+            <peer>
+              <packageName>com.io7m.example</packageName>
+              <imports>
+                <import>unparseable</import>
+                <import>com.io7m.ex1:x:1.2.0</import>
+                <import>com.io7m.ex2</import>
+                <import>com.io7m.ex3:x.y.z</import>
+              </imports>
+            </peer>
+          </peers>
         </configuration>
       </plugin>
     </plugins>
