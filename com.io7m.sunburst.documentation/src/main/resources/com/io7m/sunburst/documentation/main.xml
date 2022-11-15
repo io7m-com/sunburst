@@ -23,6 +23,7 @@
   <xi:include href="design.xml"/>
   <xi:include href="maven_plugin.xml"/>
   <xi:include href="api.xml"/>
+  <xi:include href="schemas.xml"/>
   <xi:include href="back.xml"/>
 
 </Document>

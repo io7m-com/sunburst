@@ -31,6 +31,42 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>com.io7m.sunburst.xml.packages</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>com.io7m.sunburst.xml.peers</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>com.io7m.sunburst.runtime</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>com.io7m.sunburst.runtime.spi</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>com.io7m.sunburst.inventory</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>com.io7m.sunburst.inventory.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>com.io7m.sunburst.codegen</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
       <groupId>com.io7m.primogenitor</groupId>
       <artifactId>com.io7m.primogenitor.support</artifactId>
     </dependency>
@@ -145,6 +181,36 @@
               <classifier>sources</classifier>
               <failOnMissingClassifierArtifact>false</failOnMissingClassifierArtifact>
               <outputDirectory>${project.build.directory}/javadoc-sources</outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>unpack-schemas-documentation</id>
+            <phase>package</phase>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <configuration>
+              <excludes>module-info.java</excludes>
+              <includes>**/*.xsd</includes>
+              <includeGroupIds>${project.groupId}</includeGroupIds>
+              <classifier>sources</classifier>
+              <failOnMissingClassifierArtifact>false</failOnMissingClassifierArtifact>
+              <outputDirectory>${project.build.directory}/documentation/</outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>unpack-schemas-epub</id>
+            <phase>package</phase>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <configuration>
+              <excludes>module-info.java</excludes>
+              <includes>**/*.xsd</includes>
+              <includeGroupIds>${project.groupId}</includeGroupIds>
+              <classifier>sources</classifier>
+              <failOnMissingClassifierArtifact>false</failOnMissingClassifierArtifact>
+              <outputDirectory>${project.build.directory}/epub/</outputDirectory>
             </configuration>
           </execution>
           <execution>
