@@ -31,10 +31,14 @@
 .expression,
 .file,
 .package,
-.parameter,
-.term
+.parameter
 {
   font-family: monospace;
+}
+
+.term
+{
+  font-style: italic;
 }
 
 .genericTable

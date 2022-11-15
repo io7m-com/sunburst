@@ -65,7 +65,7 @@
         <Item>
           Resources in <Term type="package">sunburst</Term> are located using a simple URI-like mechanism that insulates
           the application from having to know where to find resources in the filesystem. This preserves most of the
-          convenience of the <Term type="term">Class.getResource()</Term> API.
+          convenience of the <Term type="function">Class.getResource()</Term> API.
         </Item>
         <Item>
           Resources in <Term type="package">sunburst</Term> are integrity-checked. Resources are inserted into a
