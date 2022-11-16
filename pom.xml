@@ -28,6 +28,7 @@
     <module>com.io7m.sunburst.inventory</module>
     <module>com.io7m.sunburst.maven.plugin</module>
     <module>com.io7m.sunburst.model</module>
+    <module>com.io7m.sunburst.pkggen</module>
     <module>com.io7m.sunburst.runtime.spi</module>
     <module>com.io7m.sunburst.runtime</module>
     <module>com.io7m.sunburst.tests</module>
