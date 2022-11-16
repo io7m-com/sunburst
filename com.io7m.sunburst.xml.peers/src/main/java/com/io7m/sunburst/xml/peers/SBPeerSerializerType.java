@@ -20,12 +20,14 @@ package com.io7m.sunburst.xml.peers;
 import com.io7m.anethum.api.SerializerType;
 import com.io7m.sunburst.model.SBPeer;
 
+import java.util.List;
+
 /**
  * A peer serializer.
  */
 
 public interface SBPeerSerializerType
-  extends SerializerType<SBPeer>
+  extends SerializerType<List<SBPeer>>
 {
 
 }

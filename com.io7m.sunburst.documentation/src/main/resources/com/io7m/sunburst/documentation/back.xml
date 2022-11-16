@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Section xmlns="urn:com.io7m.structural:8:0"
+         xmlns:xi="http://www.w3.org/2001/XInclude"
+         id="1cffd0ff-d36f-45bc-b809-d44844df396c"
+         title="License">
+
+  <Paragraph>
+    This documentation is placed into the public domain.
+  </Paragraph>
+
+  <FormalItem title="License">
+    <Verbatim><![CDATA[Copyright © 2021 Mark Raynsford <code@io7m.com> https://www.io7m.com
+
+This book is placed into the public domain for free use by anyone
+for any purpose. It may be freely used, modified, and distributed.
+
+In jurisdictions that do not recognise the public domain this book
+may be freely used, modified, and distributed without restriction.
+
+This book comes with absolutely no warranty.
+]]></Verbatim>
+  </FormalItem>
+
+</Section>

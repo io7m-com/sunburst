@@ -31,6 +31,7 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Settings;
 
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,22 +44,13 @@ import java.util.List;
 public final class SunburstMojo extends AbstractMojo
 {
   /**
-   * The packages imported by this module.
+   * The peers in this module.
    */
 
   @Parameter(
-    name = "imports",
+    name = "peers",
     required = false)
-  private List<String> imports;
-
-  /**
-   * The package name.
-   */
-
-  @Parameter(
-    name = "packageName",
-    required = true)
-  private String packageName;
+  private List<Peer> peers;
 
   /**
    * The current Maven settings.
@@ -101,8 +93,8 @@ public final class SunburstMojo extends AbstractMojo
     throws MojoExecutionException
   {
     try {
-      final var peer =
-        this.parsePeer();
+      final var parsedPeers =
+        this.parsePeers();
       final var codeGenerators =
         new SBCodeGenerators(new SBPeerSerializers());
       final var outputPath =
@@ -111,7 +103,7 @@ public final class SunburstMojo extends AbstractMojo
 
       final var codeGenerator =
         codeGenerators.createGenerator(
-          new SBCodeGeneratorConfiguration(outputPath, peer)
+          new SBCodeGeneratorConfiguration(outputPath, parsedPeers)
         );
 
       codeGenerator.execute();
@@ -128,30 +120,33 @@ public final class SunburstMojo extends AbstractMojo
     }
   }
 
-  private SBPeer parsePeer()
+  private List<SBPeer> parsePeers()
     throws SBPeerException
   {
-    if (this.imports == null) {
-      this.imports = List.of();
+    if (this.peers == null) {
+      this.peers = List.of();
     }
 
-    final var log =
-      this.getLog();
+    final var log = this.getLog();
+    final var results = new ArrayList<SBPeer>(this.peers.size());
+    for (final var p : this.peers) {
+      final var builder =
+        SBPeer.builder(p.packageName());
 
-    final var builder =
-      SBPeer.builder(this.packageName);
-
-    for (final var text : this.imports) {
-      builder.addImportText(text);
-    }
-
-    try {
-      return builder.build();
-    } catch (final SBPeerException e) {
-      for (final var problem : e.problems()) {
-        log.error(problem);
+      for (final var text : p.imports()) {
+        builder.addImportText(text);
       }
-      throw e;
+
+      try {
+        results.add(builder.build());
+      } catch (final SBPeerException e) {
+        for (final var problem : e.problems()) {
+          log.error(problem);
+        }
+        throw e;
+      }
     }
+
+    return List.copyOf(results);
   }
 }

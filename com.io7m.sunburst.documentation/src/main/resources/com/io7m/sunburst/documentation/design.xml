@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Section xmlns="urn:com.io7m.structural:8:0"
+         id="70718d44-c226-4e2f-8f0b-694de50e4d89"
+         title="Design &amp; Implementation">
+
+  <Subsection title="Overview">
+    <Paragraph>
+      The <Term type="package">sunburst</Term> package provides a strongly-versioned, transactional package system for
+      applications that include large assets such as texture images, audio files, and etc.
+    </Paragraph>
+  </Subsection>
+
+  <Subsection title="Motivation">
+    <Paragraph>
+      The Java runtime environment includes the concept of <Term type="term">resources</Term>. A resource is a file that
+      can be referenced from within programs, and is typically delivered inside one of the
+      <Term type="term">jar</Term>
+      files that comprise an application. The runtime environment provides convenient access to resources via the
+      <LinkExternal target="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html#getResource(java.lang.String)">
+        Class.getResource()
+      </LinkExternal>
+      method, and this has the desirable property that the application effectively does not need to know its own
+      installation location to locate data files, and conceptually doesn't even need access to a filesystem; it simply
+      calls into the resource API and gets data in return from the runtime. However, resources have a few limitations
+      that are problematic for certain kinds of applications and deployment scenarios:
+    </Paragraph>
+    <FormalItem title="Limitations Of Resources">
+      <ListUnordered>
+        <Item>
+          As resources are tightly bound to the application's <Term type="term">jar</Term> files, the resources must be
+          re-delivered to users every time code in the same <Term type="term">jar</Term> file is updated, even if none
+          of the resources changed. If a <Term type="term">jar</Term> file contains a gigabyte of resource files, and a
+          single line of code in a class in the <Term type="term">jar</Term> file is changed, then users must be sent a
+          new copy of the gigabyte-sized <Term type="term">jar</Term> file when the application is updated.
+        </Item>
+        <Item>
+          As the Java runtime environment allows for classes to be loaded over a network connection, resources and
+          classes alike are limited to being accessed in a stream-like fashion, unless the application introspectively
+          tries various hacks to locate its own <Term type="term">jar</Term> files (which may or may not be present in
+          the filesystem). This precludes accessing large resource files such as audio files in a random-access fashion.
+          It also precludes memory mapping resources for efficient uploading to GPUs and other external hardware.
+        </Item>
+        <Item>
+          Prior to the introduction of the module system in the Java runtime, any class could access the resources of
+          any other class, intentionally or unintentionally. This can introduce accidental implicit dependencies across
+          codebases, which can be broken unexpectedly when a (transitive) dependency happens to be removed from the set
+          of packages that comprise an application.
+        </Item>
+      </ListUnordered>
+    </FormalItem>
+    <Paragraph>
+      For many applications, the above limitations don't constitute practical problems. For small files, and files that
+      do not require random access, Java resources should continue to be the go-to method for including content with
+      applications. For applications where any of the above points are a problem, the <Term type="package">sunburst
+    </Term> package exists to provide the following benefits:
+    </Paragraph>
+    <FormalItem title="Design Points">
+      <ListUnordered>
+        <Item>
+          Resources in <Term type="package">sunburst</Term> are simple files in the filesystem. They can be accessed in
+          a random-access fashion, memory-mapped, or subjected to any of the other operations supported by the host
+          filesystem.
+        </Item>
+        <Item>
+          Resources in <Term type="package">sunburst</Term> are located using a simple URI-like mechanism that insulates
+          the application from having to know where to find resources in the filesystem. This preserves most of the
+          convenience of the <Term type="function">Class.getResource()</Term> API.
+        </Item>
+        <Item>
+          Resources in <Term type="package">sunburst</Term> are integrity-checked. Resources are inserted into a
+          content-addressed directory structure indexed by cryptographic hashes. Individual corrupted or missing
+          resources can be automatically re-downloaded without requiring the re-download of all resources. This saves
+          greatly on network bandwidth during updates.
+        </Item>
+        <Item>
+          Resources in <Term type="package">sunburst</Term> are deduplicated. Resources are indexed by their
+          cryptographic hash, so if many different <Term type="term">packages</Term> reference a resource, the resource
+          is only stored in the filesystem once. For large files, this can entail significant space savings.
+        </Item>
+        <Item>
+          Resources in <Term type="package">sunburst</Term> are grouped into strongly-versioned
+          <Term type="term">packages</Term>, with non-<Term type="term">snapshot</Term> versions of packages being
+          treated as immutable. Packages must be explicitly <Term type="term">imported</Term> by Java code in order to
+          be visible to it; accidental implicit dependencies are prevented. APIs are provided to check that all of the
+          application's required
+          <Term type="package">sunburst</Term>
+          <Term type="term">packages</Term>
+          are present and installed on application startup.
+        </Item>
+        <Item>
+          Packages in <Term type="package">sunburst</Term> are backed by transactional storage, meaning that packages
+          can be safely and atomically installed/uninstalled/updated, even from multiple processes concurrently.
+          Multiple versions of the same package can be installed concurrently, and an unlimited number of applications
+          can share the same <Term type="package">sunburst</Term> database if desired.
+        </Item>
+      </ListUnordered>
+    </FormalItem>
+  </Subsection>
+
+  <Subsection title="Structure">
+    <Subsection title="Blob"
+                id="6b123b36-76f8-47a9-baff-1a8d0597525e">
+      <Paragraph>
+        A <Term type="term">blob</Term> is the most fundamental object in <Term type="package">sunburst</Term>. It
+        consists of binary data representing the content of the blob, and a purely informative
+        <LinkExternal target="https://en.wikipedia.org/wiki/Media_type">media type</LinkExternal>. A blob is uniquely
+        identified by the cryptographic hash of its content. In <Term type="package">sunburst</Term>, resources are
+        stored as blobs, one blob per file, with no leading or trailing data in the file.
+      </Paragraph>
+    </Subsection>
+    <Subsection title="Package"
+                id="e3f60fb4-9abe-4a40-b14c-209e15184e40">
+      <Paragraph>
+        A <Term type="term">package</Term> in <Term type="package">sunburst</Term> lists a set of
+        <Link target="6b123b36-76f8-47a9-baff-1a8d0597525e">blobs</Link>, associating each blob with
+        a <Term type="term">path</Term>, and is assigned a unique package identifier (in reverse DNS form), and a
+        <LinkExternal target="https://semver.org/">semantic version</LinkExternal>
+        number.
+      </Paragraph>
+      <Paragraph>
+        A <Term type="term">package</Term> with a version number that does not have a
+        <Term type="term">SNAPSHOT</Term>
+        qualifier is considered to be immutable once published. It is an error to attempt to add or remove resources
+        to/from a non-<Term type="term">SNAPSHOT</Term> package once published. Packages with a
+        <Term type="term">SNAPSHOT</Term>
+        qualifier are considered mutable, should be used during application development, and should be assigned a non-<Term type="term">
+        SNAPSHOT
+      </Term> version when a version of the application is to be released.
+      </Paragraph>
+    </Subsection>
+    <Subsection title="Peer"
+                id="4d47b4bc-48a1-43d2-9beb-adb614f480ec">
+      <Paragraph>
+        A <Term type="term">peer</Term> in <Term type="package">sunburst</Term> associates a Java package (such
+        as <Term type="package">java.net.http</Term>) with the
+        <Term type="package">sunburst</Term>
+        packages it explicitly <Term type="term">imports</Term>. When a Java class requests a resource from the
+        <Term type="package">sunburst</Term>
+        runtime, the runtime checks that the package to which the Java class belongs has an
+        <Term type="term">import</Term>
+        that names the
+        <Term type="package">sunburst</Term>
+        package that contains the requested resource. This ensures that code cannot accidentally access resources in
+        packages that it did not explicitly import.
+      </Paragraph>
+      <Paragraph>
+        Peers are declared both in static XML metadata that is included in a standardized location inside the
+        <Term type="file">META-INF</Term>
+        directories of jar files, and also exist as instances of an
+        <Term type="type">SBPeer</Term>
+        class that are loaded by the <Term type="package">sunburst</Term> runtime using the standard Java
+        <LinkExternal target="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/ServiceLoader.html">
+          ServiceLoader
+        </LinkExternal>
+        mechanism. In order to relieve programmers of having to keep metadata and implementations in sync, APIs and a
+        <LinkExternal target="https://maven.apache.org">Maven plugin</LinkExternal>
+        are provided that will generate both the required metadata and code at build-time from a few trivial import
+        declarations given in build scripts.
+      </Paragraph>
+      <Paragraph>
+        It is an error for a Java package to import two different versions of the same
+        <Term type="package">sunburst</Term>
+        package, but it is acceptable for two different Java packages in the same application to import two different
+        versions of the same
+        <Term type="package">sunburst</Term>
+        package. Imports are not "inherited" in any form by Java packages; if a Java package
+        <Term type="package">x.y.z</Term>
+        imports a <Term type="package">sunburst</Term> package <Term type="package">a.b.c</Term>, this does not imply
+        that classes in a hypothetical <Term type="package">x.y.z.w</Term> package also have access to
+        <Term type="package">a.b.c</Term>.
+      </Paragraph>
+      <Paragraph>
+        The peers present in a given <Term type="term">jar</Term> file must be declared in
+        a file at <Term type="file">META-INF/Sunburst/Peers.xml</Term> inside the <Term type="term">jar</Term>.
+        The XML data must conform to the published
+        <Link target="b1f54c47-1e29-46d8-ada3-831da93ae73c">peers</Link> schema.
+      </Paragraph>
+    </Subsection>
+    <Subsection title="Inventory"
+                id="55085fc2-7257-4e4b-a94d-27f508681753">
+      <Paragraph>
+        The <Term type="term">inventory</Term> in <Term type="package">sunburst</Term> is the local store containing
+        <Link target="e3f60fb4-9abe-4a40-b14c-209e15184e40">packages</Link>
+        and
+        <Link target="6b123b36-76f8-47a9-baff-1a8d0597525e">blobs</Link>. The inventory is backed by transactional
+        storage, and can be safely accessed from any number of threads and/or processes concurrently. The intention is
+        to allow for resources to be updated in realtime during application development without requiring the
+        application to restart, and to allow installer programs to install resources safely and atomically during
+        deployment.
+      </Paragraph>
+    </Subsection>
+    <Subsection title="Relationships">
+      <Paragraph>
+        The relationships between the objects in <Term type="package">sunburst</Term> are illustrated by the following
+        diagram:
+      </Paragraph>
+      <FormalItem title="Relationships">
+        <Image source="arch.png"
+               width="761"
+               height="761">Object relationships.
+        </Image>
+      </FormalItem>
+      <Paragraph>
+        In the above image, a Java program named <Term type="package">installer</Term> downloads packages and blobs from
+        an arbitrary location on the internet, and installs them into the local inventory. In this case, it has
+        installed sunburst packages <Term type="package">x.y:1.0.0</Term>,
+        <Term type="package">x.y:1.2.0</Term>, and <Term type="package">x.z:1.0.3</Term>. The package <Term type="package">
+        x.y:1.0.0
+      </Term> references blobs
+        <Term type="file">93BEF670</Term>
+        and <Term type="file">6C10D993</Term>. The package
+        <Term type="package">x.y:1.2.0</Term>
+        references blobs
+        <Term type="file">3D05CF39</Term>
+        and <Term type="file">6C10D993</Term>. This indicates that whilst both packages are installed into the
+        inventory, some content within the packages is the same and therefore isn't stored twice on disk. The package <Term type="package">
+        x.z:1.0.3
+      </Term> only references blob <Term type="file">64508EDA</Term>.
+      </Paragraph>
+      <Paragraph>
+        A second Java program named <Term type="package">consumer</Term> imports packages
+        <Term type="package">x.y:1.2.0</Term>
+        and <Term type="package">x.z:1.0.3</Term> and so can read the contents of <Term type="file">
+        6C10D993</Term>, <Term type="file">3D05CF39</Term>, and
+        <Term type="file">64508EDA</Term>
+        by specifying the paths associated with the blobs in the respective packages.
+      </Paragraph>
+    </Subsection>
+  </Subsection>
+
+</Section>

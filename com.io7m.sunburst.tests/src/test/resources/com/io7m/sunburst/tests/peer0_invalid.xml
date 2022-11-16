@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<Peer xmlns="urn:com.io7m.sunburst:peer:1"
-      Name=""></Peer>
+<Peers xmlns="urn:com.io7m.sunburst:peer:1">
+  <Peer Name=""></Peer>
+</Peers>

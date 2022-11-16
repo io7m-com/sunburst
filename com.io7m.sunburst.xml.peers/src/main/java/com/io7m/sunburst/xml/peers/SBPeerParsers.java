@@ -25,6 +25,7 @@ import com.io7m.sunburst.model.SBPackageIdentifier;
 import com.io7m.sunburst.model.SBPeer;
 import com.io7m.sunburst.model.SBPeerException;
 import com.io7m.sunburst.xml.peers.jaxb.Peer;
+import com.io7m.sunburst.xml.peers.jaxb.Peers;
 import com.io7m.verona.core.Version;
 import com.io7m.verona.core.VersionQualifier;
 import jakarta.xml.bind.JAXBContext;
@@ -37,7 +38,6 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.HexFormat;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -79,10 +79,6 @@ public final class SBPeerParsers
 
   private static final class Parser implements SBPeerParserType
   {
-    private static final HexFormat HEX_FORMAT =
-      HexFormat.of()
-        .withUpperCase();
-
     private final URI source;
     private final InputStream stream;
     private final Consumer<ParseStatus> statusConsumer;
@@ -101,7 +97,7 @@ public final class SBPeerParsers
     }
 
     @Override
-    public SBPeer execute()
+    public List<SBPeer> execute()
       throws ParseException
     {
       final var errors = new ArrayList<ParseStatus>();
@@ -151,16 +147,27 @@ public final class SBPeerParsers
         final var streamSource =
           new StreamSource(this.stream, this.source.toString());
         final var unmarshalled =
-          (Peer) unmarshaller.unmarshal(streamSource);
+          (Peers) unmarshaller.unmarshal(streamSource);
 
         if (!errors.isEmpty()) {
           throw new IllegalStateException();
         }
 
-        return processPeer(unmarshalled);
+        return processPeers(unmarshalled);
       } catch (final Exception e) {
         throw new ParseException("Parsing failed.", List.copyOf(errors));
       }
+    }
+
+    private static List<SBPeer> processPeers(
+      final Peers ps)
+      throws SBPeerException
+    {
+      final var results = new ArrayList<SBPeer>();
+      for (final var p : ps.getPeer()) {
+        results.add(processPeer(p));
+      }
+      return List.copyOf(results);
     }
 
     private static SBPeer processPeer(

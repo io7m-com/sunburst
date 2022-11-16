@@ -115,6 +115,10 @@ public final class SBInventory implements SBInventoryType
   private static final Logger LOG =
     LoggerFactory.getLogger(SBInventory.class);
 
+  private static final OpenOption[] CREATE_TRUNCATE = {
+    CREATE, WRITE, TRUNCATE_EXISTING,
+  };
+
   private final SBInventoryConfiguration configuration;
   private final Path dbFile;
   private final SQLiteDataSource dataSource;
@@ -767,11 +771,8 @@ public final class SBInventory implements SBInventoryType
               .jssAlgorithmName()
           );
 
-        final var fileOptions =
-          new OpenOption[]{CREATE, WRITE, TRUNCATE_EXISTING};
-
         try (var lockChannel =
-               FileChannel.open(pathLock, fileOptions)) {
+               FileChannel.open(pathLock, CREATE_TRUNCATE)) {
           try (var ignored = lockChannel.lock()) {
             this.blobWriteLocked(
               stream,
@@ -779,7 +780,7 @@ public final class SBInventory implements SBInventoryType
               pathBlob,
               pathTmp,
               digest,
-              fileOptions
+              CREATE_TRUNCATE
             );
           } finally {
             Files.deleteIfExists(pathTmp);
@@ -820,7 +821,7 @@ public final class SBInventory implements SBInventoryType
           Files.createDirectories(pathBlob.getParent());
 
           final var fileOptions =
-            new OpenOption[]{CREATE, WRITE, TRUNCATE_EXISTING};
+            CREATE_TRUNCATE;
 
           try (var lockChannel =
                  FileChannel.open(pathLock, fileOptions)) {

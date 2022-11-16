@@ -13,11 +13,15 @@
         <artifactId>com.io7m.sunburst.maven.plugin</artifactId>
         <version>${project.version}</version>
         <configuration>
-          <packageName>com.io7m.example</packageName>
-          <imports>
-            <import>com.io7m.ex1:1.2.0</import>
-            <import>com.io7m.ex1:2.2.0</import>
-          </imports>
+          <peers>
+            <peer>
+              <packageName>com.io7m.example</packageName>
+              <imports>
+                <import>com.io7m.ex1:1.2.0</import>
+                <import>com.io7m.ex1:2.2.0</import>
+              </imports>
+            </peer>
+          </peers>
         </configuration>
       </plugin>
     </plugins>

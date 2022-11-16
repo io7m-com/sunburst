@@ -9,7 +9,7 @@
   <parent>
     <artifactId>com.io7m.sunburst</artifactId>
     <groupId>com.io7m.sunburst</groupId>
-    <version>0.0.1</version>
+    <version>0.0.3</version>
   </parent>
 
   <artifactId>com.io7m.sunburst.tests</artifactId>
@@ -51,6 +51,11 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>com.io7m.sunburst.runtime</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>com.io7m.sunburst.pkggen</artifactId>
       <version>${project.version}</version>
     </dependency>
 

@@ -19,29 +19,30 @@ package com.io7m.sunburst.codegen;
 import com.io7m.sunburst.model.SBPeer;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Objects;
 
 /**
  * The configuration for a code generator.
  *
  * @param sourceDirectory The directory that will contain generated sources
- * @param peer            The peer definition
+ * @param peers           The peer definitions
  */
 
 public record SBCodeGeneratorConfiguration(
   Path sourceDirectory,
-  SBPeer peer)
+  List<SBPeer> peers)
 {
   /**
    * The configuration for a code generator.
    *
    * @param sourceDirectory The directory that will contain generated sources
-   * @param peer            The peer definition
+   * @param peers           The peer definitions
    */
 
   public SBCodeGeneratorConfiguration
   {
     Objects.requireNonNull(sourceDirectory, "sourceDirectory");
-    Objects.requireNonNull(peer, "peer");
+    Objects.requireNonNull(peers, "peers");
   }
 }

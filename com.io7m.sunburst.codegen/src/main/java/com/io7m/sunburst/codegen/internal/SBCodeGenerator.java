@@ -17,6 +17,7 @@
 package com.io7m.sunburst.codegen.internal;
 
 import com.io7m.anethum.common.SerializeException;
+import com.io7m.jodist.AnnotationSpec;
 import com.io7m.jodist.ClassName;
 import com.io7m.jodist.CodeBlock;
 import com.io7m.jodist.FieldSpec;
@@ -31,6 +32,7 @@ import com.io7m.sunburst.model.SBPeerException;
 import com.io7m.sunburst.runtime.spi.SBPeerFactoryType;
 import com.io7m.sunburst.xml.peers.SBPeerSerializerFactoryType;
 import com.io7m.verona.core.Version;
+import org.osgi.service.component.annotations.Component;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -80,7 +82,9 @@ public final class SBCodeGenerator implements SBCodeGeneratorType
   public void execute()
     throws IOException
   {
-    this.writeClass(this.generatePeerClass());
+    for (final var p : this.configuration.peers()) {
+      this.writeClass(p, this.generatePeerClass(p));
+    }
     this.writeServiceFile();
     this.writePeerFile();
   }
@@ -93,7 +97,7 @@ public final class SBCodeGenerator implements SBCodeGeneratorType
 
     Files.createDirectories(path.getParent());
     try {
-      this.peerSerializers.serializeFile(path, this.configuration.peer());
+      this.peerSerializers.serializeFile(path, this.configuration.peers());
     } catch (final SerializeException e) {
       throw new IOException(e);
     }
@@ -107,7 +111,7 @@ public final class SBCodeGenerator implements SBCodeGeneratorType
 
     path = path.resolve("META-INF");
     path = path.resolve("Sunburst");
-    path = path.resolve("Peer.xml");
+    path = path.resolve("Peers.xml");
     return path;
   }
 
@@ -121,15 +125,17 @@ public final class SBCodeGenerator implements SBCodeGeneratorType
 
     try (var writer =
            Files.newBufferedWriter(path, WRITE, CREATE, TRUNCATE_EXISTING)) {
-      writer.append(this.className());
-      writer.append("\n");
+      for (final var p : this.configuration.peers()) {
+        writer.append(className(p));
+        writer.append("\n");
+      }
     }
   }
 
-  private String className()
+  private static String className(
+    final SBPeer peer)
   {
-    return "%s.%s".formatted(
-      this.configuration.peer().packageName(), PEER_CLASS_NAME);
+    return "%s.%s".formatted(peer.packageName(), PEER_CLASS_NAME);
   }
 
   private Path generateServiceFileName()
@@ -145,29 +151,29 @@ public final class SBCodeGenerator implements SBCodeGeneratorType
   }
 
   private void writeClass(
+    final SBPeer peer,
     final TypeSpec classSpec)
     throws IOException
   {
-    final var file =
-      this.generateClassFileName();
-
+    final var file = this.generateClassFileName(peer);
     Files.createDirectories(file.getParent());
 
     final var javaFile =
-      JavaFile.builder(this.configuration.peer().packageName(), classSpec)
+      JavaFile.builder(peer.packageName(), classSpec)
         .build();
 
     javaFile.writeTo(this.configuration.sourceDirectory());
   }
 
-  private Path generateClassFileName()
+  private Path generateClassFileName(
+    final SBPeer peer)
   {
     var path =
       this.configuration.sourceDirectory()
         .toAbsolutePath();
 
     final var segments =
-      List.of(this.configuration.peer().packageName().split("\\."));
+      List.of(peer.packageName().split("\\."));
 
     for (final var item : segments) {
       path = path.resolve(item);
@@ -176,16 +182,20 @@ public final class SBCodeGenerator implements SBCodeGeneratorType
     return path;
   }
 
-  private TypeSpec generatePeerClass()
+  private TypeSpec generatePeerClass(
+    final SBPeer peer)
   {
-    final var peer =
-      this.configuration.peer();
-
     final var className =
       ClassName.get(peer.packageName(), PEER_CLASS_NAME);
     final var classBuilder =
       TypeSpec.classBuilder(className);
 
+    final var annotSpec =
+      AnnotationSpec.builder(Component.class)
+        .addMember("service", "$T.class", SBPeerFactoryType.class)
+        .build();
+
+    classBuilder.addAnnotation(annotSpec);
     classBuilder.addModifiers(PUBLIC, FINAL);
     classBuilder.addSuperinterface(SBPeerFactoryType.class);
     classBuilder.addJavadoc(
@@ -204,10 +214,8 @@ public final class SBCodeGenerator implements SBCodeGeneratorType
     final var names = new ArrayList<String>();
     final var nameGen = new SBFreshNames();
 
-    final var importMap =
-      this.configuration.peer().imports();
-    final var importPackages =
-      new ArrayList<>(importMap.keySet());
+    final var importMap = peer.imports();
+    final var importPackages = new ArrayList<>(importMap.keySet());
     Collections.sort(importPackages);
 
     for (final var packName : importPackages) {
