@@ -83,6 +83,7 @@ public final class SBRuntimeContextTest
     throws Exception
   {
     this.inventory.close();
+    SBTestDirectories.deleteDirectory(this.directory);
   }
 
   /**

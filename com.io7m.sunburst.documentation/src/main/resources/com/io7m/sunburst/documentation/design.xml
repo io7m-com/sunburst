@@ -147,7 +147,7 @@
       <Paragraph>
         Peers are declared both in static XML metadata that is included in a standardized location inside the
         <Term type="file">META-INF</Term>
-        directories of jar files, and also exist as instances of a
+        directories of jar files, and also exist as instances of an
         <Term type="type">SBPeer</Term>
         class that are loaded by the <Term type="package">sunburst</Term> runtime using the standard Java
         <LinkExternal target="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/ServiceLoader.html">

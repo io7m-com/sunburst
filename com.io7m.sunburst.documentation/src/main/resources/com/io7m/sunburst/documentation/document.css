@@ -30,8 +30,10 @@
 .element,
 .expression,
 .file,
+.function,
 .package,
-.parameter
+.parameter,
+.type
 {
   font-family: monospace;
 }
