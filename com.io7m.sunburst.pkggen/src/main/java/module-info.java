@@ -14,6 +14,9 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+import com.io7m.mime2045.parser.api.MimeParserFactoryType;
+import com.io7m.sunburst.xml.packages.SBPackageSerializerFactoryType;
+
 /**
  * Asset package system (Package generation)
  */
@@ -26,6 +29,10 @@ module com.io7m.sunburst.pkggen
   requires transitive com.io7m.sunburst.model;
   requires transitive com.io7m.sunburst.xml.packages;
 
+  uses MimeParserFactoryType;
+  uses SBPackageSerializerFactoryType;
+
+  requires com.io7m.mime2045.parser.api;
   requires com.io7m.anethum.common;
 
   exports com.io7m.sunburst.pkggen;

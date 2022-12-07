@@ -17,6 +17,7 @@
 
 package com.io7m.sunburst.pkggen;
 
+import com.io7m.mime2045.parser.api.MimeParserFactoryType;
 import com.io7m.sunburst.pkggen.internal.SBPackageGenerator;
 import com.io7m.sunburst.xml.packages.SBPackageSerializerFactoryType;
 
@@ -32,16 +33,21 @@ public final class SBPackageGenerators
   implements SBPackageGeneratorFactoryType
 {
   private final SBPackageSerializerFactoryType packageSerializers;
+  private final MimeParserFactoryType mimeParsers;
 
   /**
    * The default factory of package generators.
    *
+   * @param inMimeParsers     The MIME parsers
    * @param inPeerSerializers The package serializer factory
    */
 
   public SBPackageGenerators(
+    final MimeParserFactoryType inMimeParsers,
     final SBPackageSerializerFactoryType inPeerSerializers)
   {
+    this.mimeParsers =
+      Objects.requireNonNull(inMimeParsers, "mimeParsers");
     this.packageSerializers =
       Objects.requireNonNull(inPeerSerializers, "packageSerializers");
   }
@@ -53,6 +59,9 @@ public final class SBPackageGenerators
   public SBPackageGenerators()
   {
     this(
+      ServiceLoader.load(MimeParserFactoryType.class)
+        .findFirst()
+        .orElseThrow(() -> noSuchService(MimeParserFactoryType.class)),
       ServiceLoader.load(SBPackageSerializerFactoryType.class)
         .findFirst()
         .orElseThrow(() -> noSuchService(SBPackageSerializerFactoryType.class))
@@ -71,6 +80,10 @@ public final class SBPackageGenerators
   public SBPackageGeneratorType createGenerator(
     final SBPackageGeneratorConfiguration configuration)
   {
-    return new SBPackageGenerator(this.packageSerializers, configuration);
+    return new SBPackageGenerator(
+      this.mimeParsers,
+      this.packageSerializers,
+      configuration
+    );
   }
 }

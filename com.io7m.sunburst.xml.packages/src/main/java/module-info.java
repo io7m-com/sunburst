@@ -14,6 +14,7 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+import com.io7m.mime2045.parser.api.MimeParserFactoryType;
 import com.io7m.sunburst.xml.packages.SBPackageParserFactoryType;
 import com.io7m.sunburst.xml.packages.SBPackageParsers;
 import com.io7m.sunburst.xml.packages.SBPackageSerializerFactoryType;
@@ -30,8 +31,11 @@ module com.io7m.sunburst.xml.packages
 
   requires com.io7m.anethum.api;
   requires com.io7m.anethum.common;
+  requires com.io7m.mime2045.parser.api;
   requires com.io7m.sunburst.model;
   requires jakarta.xml.bind;
+
+  uses MimeParserFactoryType;
 
   provides SBPackageParserFactoryType
     with SBPackageParsers;

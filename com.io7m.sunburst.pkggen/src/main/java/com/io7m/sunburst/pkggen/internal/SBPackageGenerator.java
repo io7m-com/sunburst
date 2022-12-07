@@ -18,6 +18,8 @@
 package com.io7m.sunburst.pkggen.internal;
 
 import com.io7m.anethum.common.SerializeException;
+import com.io7m.mime2045.parser.api.MimeParseException;
+import com.io7m.mime2045.parser.api.MimeParserFactoryType;
 import com.io7m.sunburst.model.SBBlob;
 import com.io7m.sunburst.model.SBHash;
 import com.io7m.sunburst.model.SBPackage;
@@ -55,6 +57,7 @@ public final class SBPackageGenerator implements SBPackageGeneratorType
   private static final CopyOption[] REPLACE_ATOMICALLY =
     {REPLACE_EXISTING, ATOMIC_MOVE};
 
+  private final MimeParserFactoryType mimeParsers;
   private final SBPackageSerializerFactoryType packageSerializers;
   private final SBPackageGeneratorConfiguration configuration;
   private final Path outputTmp;
@@ -64,14 +67,18 @@ public final class SBPackageGenerator implements SBPackageGeneratorType
   /**
    * The default package generator implementation.
    *
+   * @param inMimeParsers        The MIME parsers
    * @param inPackageSerializers The package serializers
    * @param inConfiguration      The package generator configuration
    */
 
   public SBPackageGenerator(
+    final MimeParserFactoryType inMimeParsers,
     final SBPackageSerializerFactoryType inPackageSerializers,
     final SBPackageGeneratorConfiguration inConfiguration)
   {
+    this.mimeParsers =
+      Objects.requireNonNull(inMimeParsers, "mimeParsers");
     this.packageSerializers =
       Objects.requireNonNull(inPackageSerializers, "packageSerializers");
     this.configuration =
@@ -115,11 +122,13 @@ public final class SBPackageGenerator implements SBPackageGeneratorType
           final var blob =
             new SBBlob(
               Files.size(filePath),
-              Files.probeContentType(filePath),
+              this.mimeParsers.parse(Files.probeContentType(filePath)),
               hash
             );
           final var entry = new SBPackageEntry(sbPath, blob);
           this.entries.put(sbPath, entry);
+        } catch (final MimeParseException e) {
+          throw new IOException(e);
         }
       }
     }

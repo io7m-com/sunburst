@@ -37,6 +37,7 @@
   </modules>
 
   <properties>
+    <com.io7m.mime2045.version>0.0.1</com.io7m.mime2045.version>
     <com.io7m.anethum.version>0.0.2</com.io7m.anethum.version>
     <com.io7m.cedarbridge.version>0.0.11</com.io7m.cedarbridge.version>
     <com.io7m.jbssio.version>1.1.1</com.io7m.jbssio.version>
@@ -147,12 +148,12 @@
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
-        <version>1.4.4</version>
+        <version>1.4.5</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
-        <version>2.0.3</version>
+        <version>2.0.5</version>
       </dependency>
       <dependency>
         <groupId>com.h2database</groupId>
@@ -202,7 +203,7 @@
       <dependency>
         <groupId>com.io7m.jlexing</groupId>
         <artifactId>com.io7m.jlexing.core</artifactId>
-        <version>3.0.0</version>
+        <version>3.1.0</version>
       </dependency>
       <dependency>
         <groupId>org.junit.jupiter</groupId>
@@ -217,7 +218,7 @@
       <dependency>
         <groupId>org.xerial</groupId>
         <artifactId>sqlite-jdbc</artifactId>
-        <version>3.39.4.0</version>
+        <version>3.40.0.0</version>
       </dependency>
       <dependency>
         <groupId>com.io7m.trasco</groupId>
@@ -288,7 +289,22 @@
       <dependency>
         <groupId>com.io7m.primogenitor</groupId>
         <artifactId>com.io7m.primogenitor.support</artifactId>
-        <version>7.4.0</version>
+        <version>7.5.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.io7m.mime2045</groupId>
+        <artifactId>com.io7m.mime2045.core</artifactId>
+        <version>${com.io7m.mime2045.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.io7m.mime2045</groupId>
+        <artifactId>com.io7m.mime2045.parser.api</artifactId>
+        <version>${com.io7m.mime2045.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.io7m.mime2045</groupId>
+        <artifactId>com.io7m.mime2045.parser</artifactId>
+        <version>${com.io7m.mime2045.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

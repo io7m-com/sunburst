@@ -111,7 +111,7 @@ public final class SBPackageGeneratorTest
       final var b = e.blob();
       assertEquals(path, e.path());
       assertEquals(6L, b.size());
-      assertEquals("text/plain", b.contentType());
+      assertEquals("text/plain", b.contentType().toString());
       assertEquals(
         "SHA2_256:2D8BD7D9BB5F85BA643F0110D50CB506A1FE439E769A22503193EA6046BB87F7",
         b.hash().toString()
@@ -174,7 +174,7 @@ public final class SBPackageGeneratorTest
       final var b = e.blob();
       assertEquals(path, e.path());
       assertEquals(8L, b.size());
-      assertEquals("text/plain", b.contentType());
+      assertEquals("text/plain", b.contentType().toString());
       assertEquals(
         "SHA2_256:760BC11721447DDCE010731C5A45E81A53AC8AEF112A9CA077D984CF7898EC21",
         b.hash().toString()
@@ -187,7 +187,7 @@ public final class SBPackageGeneratorTest
       final var b = e.blob();
       assertEquals(path, e.path());
       assertEquals(8L, b.size());
-      assertEquals("text/plain", b.contentType());
+      assertEquals("text/plain", b.contentType().toString());
       assertEquals(
         "SHA2_256:9F2EF847D3C8D3AB03EBF5AF689B1AB2BFA14FA8AB251289C82360CA7671E25D",
         b.hash().toString()
@@ -200,7 +200,7 @@ public final class SBPackageGeneratorTest
       final var b = e.blob();
       assertEquals(path, e.path());
       assertEquals(8L, b.size());
-      assertEquals("text/plain", b.contentType());
+      assertEquals("text/plain", b.contentType().toString());
       assertEquals(
         "SHA2_256:E3C7868C93C40AA40BC88EEBFB6DC2B76BFC6C8619BB3D65797B2E7063A495FA",
         b.hash().toString()

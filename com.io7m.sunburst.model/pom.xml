@@ -24,9 +24,14 @@
       <artifactId>com.io7m.sunburst.error_codes</artifactId>
       <version>${project.version}</version>
     </dependency>
+
     <dependency>
       <groupId>com.io7m.verona</groupId>
       <artifactId>com.io7m.verona.core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.io7m.mime2045</groupId>
+      <artifactId>com.io7m.mime2045.core</artifactId>
     </dependency>
 
     <dependency>

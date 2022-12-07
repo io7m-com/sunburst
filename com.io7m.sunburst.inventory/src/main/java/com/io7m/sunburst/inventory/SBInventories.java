@@ -17,6 +17,7 @@
 
 package com.io7m.sunburst.inventory;
 
+import com.io7m.mime2045.parser.api.MimeParserFactoryType;
 import com.io7m.sunburst.inventory.api.SBInventoryConfiguration;
 import com.io7m.sunburst.inventory.api.SBInventoryException;
 import com.io7m.sunburst.inventory.api.SBInventoryFactoryType;
@@ -27,6 +28,9 @@ import com.io7m.sunburst.inventory.internal.SBStrings;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.util.Objects;
+import java.util.ServiceConfigurationError;
+import java.util.ServiceLoader;
 
 /**
  * The default local inventory.
@@ -34,6 +38,20 @@ import java.io.UncheckedIOException;
 
 public final class SBInventories implements SBInventoryFactoryType
 {
+  private final MimeParserFactoryType mimeParsers;
+
+  /**
+   * The default local inventory.
+   *
+   * @param inMimeParsers The MIME parsers
+   */
+
+  public SBInventories(
+    final MimeParserFactoryType inMimeParsers)
+  {
+    this.mimeParsers =
+      Objects.requireNonNull(inMimeParsers, "mimeParsers");
+  }
 
   /**
    * The default local inventory.
@@ -41,7 +59,16 @@ public final class SBInventories implements SBInventoryFactoryType
 
   public SBInventories()
   {
-
+    this(
+      ServiceLoader.load(MimeParserFactoryType.class)
+        .findFirst()
+        .orElseThrow(() -> {
+          return new ServiceConfigurationError(
+            "No available services of type %s"
+              .formatted(MimeParserFactoryType.class)
+          );
+        })
+    );
   }
 
   @Override
@@ -52,6 +79,7 @@ public final class SBInventories implements SBInventoryFactoryType
     try {
       return SBInventory.openReadOnly(
         new SBStrings(configuration.locale()),
+        this.mimeParsers,
         configuration
       );
     } catch (final IOException e) {
@@ -67,6 +95,7 @@ public final class SBInventories implements SBInventoryFactoryType
     try {
       return SBInventory.openReadWrite(
         new SBStrings(configuration.locale()),
+        this.mimeParsers,
         configuration
       );
     } catch (final IOException e) {

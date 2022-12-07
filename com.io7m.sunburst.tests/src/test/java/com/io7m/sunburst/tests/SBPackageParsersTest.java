@@ -19,6 +19,7 @@ package com.io7m.sunburst.tests;
 
 import com.io7m.anethum.common.ParseException;
 import com.io7m.anethum.common.ParseStatus;
+import com.io7m.mime2045.core.MimeType;
 import com.io7m.sunburst.model.SBBlob;
 import com.io7m.sunburst.model.SBHash;
 import com.io7m.sunburst.model.SBPackage;
@@ -49,6 +50,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class SBPackageParsersTest
 {
+  private static final MimeType TEXT_PLAIN =
+    MimeType.of("text", "plain");
+
   private static final Logger LOG =
     LoggerFactory.getLogger(SBPackageParsersTest.class);
 
@@ -180,7 +184,7 @@ public final class SBPackageParsersTest
         SBPath.parse("/a"),
         new SBBlob(
           23L,
-          "text/plain",
+          TEXT_PLAIN,
           new SBHash(SHA2_256,
                      unhex(
                        "F74F221E3C374175B074E6A11A1CB17466015DCE03B1DAB1288D7EAB1D2A6862"))
@@ -193,7 +197,7 @@ public final class SBPackageParsersTest
         SBPath.parse("/b"),
         new SBBlob(
           13L,
-          "text/plain",
+          TEXT_PLAIN,
           new SBHash(SHA2_256,
                      unhex(
                        "5891B5B522D5DF086D0FF0B110FBD9D21BB4FC7163AF34D08286A2E846F6BE03"))
@@ -206,7 +210,7 @@ public final class SBPackageParsersTest
         SBPath.parse("/c"),
         new SBBlob(
           16L,
-          "text/plain",
+          TEXT_PLAIN,
           new SBHash(SHA2_256,
                      unhex(
                        "ABC6FD595FC079D3114D4B71A4D84B1D1D0F79DF1E70F8813212F2A65D8916DF"))

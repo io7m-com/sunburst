@@ -36,6 +36,14 @@
     </dependency>
 
     <dependency>
+      <groupId>com.io7m.mime2045</groupId>
+      <artifactId>com.io7m.mime2045.parser.api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.io7m.mime2045</groupId>
+      <artifactId>com.io7m.mime2045.core</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.io7m.jxtrand</groupId>
       <artifactId>com.io7m.jxtrand.vanilla</artifactId>
     </dependency>
