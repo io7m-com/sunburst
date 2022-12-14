@@ -26,6 +26,7 @@ module com.io7m.sunburst.model
   requires transitive com.io7m.mime2045.core;
   requires transitive com.io7m.sunburst.error_codes;
   requires transitive com.io7m.verona.core;
+  requires com.io7m.lanark.core;
 
   exports com.io7m.sunburst.model;
 }

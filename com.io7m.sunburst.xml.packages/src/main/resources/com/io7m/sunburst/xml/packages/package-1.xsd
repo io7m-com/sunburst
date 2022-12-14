@@ -27,8 +27,8 @@
       </documentation>
     </annotation>
     <restriction base="string">
-      <pattern value="[a-z][a-z0-9_-]*(\.[a-z][a-z0-9_-]*)*"/>
-      <maxLength value="255"/>
+      <pattern value="([a-z][a-z0-9_-]{0,63})(\.[a-z][a-z0-9_-]{0,62}){0,15}"/>
+      <maxLength value="1024"/>
     </restriction>
   </simpleType>
 

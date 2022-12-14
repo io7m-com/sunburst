@@ -16,9 +16,9 @@
 
 package com.io7m.sunburst.model;
 
-import java.util.List;
+import com.io7m.lanark.core.RDottedNamePatterns;
+
 import java.util.Objects;
-import java.util.regex.Pattern;
 
 /**
  * Functions to check package names.
@@ -26,9 +26,6 @@ import java.util.regex.Pattern;
 
 public final class SBPackageNames
 {
-  private static final Pattern VALID_NAME_SEGMENT =
-    Pattern.compile("[a-z][a-z0-9_-]*");
-
   private SBPackageNames()
   {
 
@@ -50,28 +47,16 @@ public final class SBPackageNames
   {
     Objects.requireNonNull(name, "name");
 
-    final var segments = List.of(name.split("\\."));
-    if (name.length() > 255 || segments.isEmpty()) {
-      throw nameInvalid(name);
-    }
-
-    for (final var segment : segments) {
-      if (!VALID_NAME_SEGMENT.matcher(segment).matches()) {
-        throw nameInvalid(name);
-      }
+    final var pattern = RDottedNamePatterns.dottedName();
+    if (!pattern.matcher(name).matches()) {
+      throw new IllegalArgumentException(
+        String.format(
+          "Name '%s' must match %s",
+          name,
+          pattern
+        )
+      );
     }
     return name;
-  }
-
-  private static IllegalArgumentException nameInvalid(
-    final String text)
-  {
-    return new IllegalArgumentException(
-      String.format(
-        "Name '%s' must consist of >= 1 repetitions of %s, and be <= 255 characters long",
-        text,
-        VALID_NAME_SEGMENT
-      )
-    );
   }
 }
