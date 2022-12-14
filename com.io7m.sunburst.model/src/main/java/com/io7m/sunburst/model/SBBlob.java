@@ -16,6 +16,8 @@
 
 package com.io7m.sunburst.model;
 
+import com.io7m.mime2045.core.MimeType;
+
 import java.util.Objects;
 
 /**
@@ -28,7 +30,7 @@ import java.util.Objects;
 
 public record SBBlob(
   long size,
-  String contentType,
+  MimeType contentType,
   SBHash hash)
 {
   /**

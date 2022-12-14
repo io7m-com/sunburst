@@ -20,6 +20,8 @@ import com.io7m.anethum.common.ParseException;
 import com.io7m.jdeferthrow.core.ExceptionTracker;
 import com.io7m.jmulticlose.core.CloseableCollection;
 import com.io7m.jmulticlose.core.CloseableCollectionType;
+import com.io7m.mime2045.parser.api.MimeParseException;
+import com.io7m.mime2045.parser.api.MimeParserFactoryType;
 import com.io7m.sunburst.inventory.api.SBInventoryConfiguration;
 import com.io7m.sunburst.inventory.api.SBInventoryException;
 import com.io7m.sunburst.inventory.api.SBInventoryReadableType;
@@ -119,28 +121,28 @@ public final class SBInventory implements SBInventoryType
     CREATE, WRITE, TRUNCATE_EXISTING,
   };
 
+  private final MimeParserFactoryType mimeParsers;
   private final SBInventoryConfiguration configuration;
-  private final Path dbFile;
   private final SQLiteDataSource dataSource;
   private final SBStrings strings;
   private final CloseableCollectionType<SBInventoryException> resources;
   private final HexFormat hexFormat;
 
   private SBInventory(
+    final MimeParserFactoryType inMimeParsers,
     final SBInventoryConfiguration inConfiguration,
     final SBStrings inStrings,
     final CloseableCollectionType<SBInventoryException> inResources,
-    final Path inDbFile,
     final SQLiteDataSource inDataSource)
   {
+    this.mimeParsers =
+      Objects.requireNonNull(inMimeParsers, "inMimeParsers");
     this.configuration =
       Objects.requireNonNull(inConfiguration, "inConfiguration");
     this.strings =
       Objects.requireNonNull(inStrings, "inStrings");
     this.resources =
       Objects.requireNonNull(inResources, "resources");
-    this.dbFile =
-      Objects.requireNonNull(inDbFile, "dbFile");
     this.dataSource =
       Objects.requireNonNull(inDataSource, "dataSource");
     this.hexFormat =
@@ -151,6 +153,7 @@ public final class SBInventory implements SBInventoryType
    * Open the inventory in read-only mode.
    *
    * @param strings       The string resources
+   * @param mimeParsers
    * @param configuration The configuration
    *
    * @return A readable inventory
@@ -160,6 +163,7 @@ public final class SBInventory implements SBInventoryType
 
   public static SBInventoryReadableType openReadOnly(
     final SBStrings strings,
+    final MimeParserFactoryType mimeParsers,
     final SBInventoryConfiguration configuration)
     throws SBInventoryException
   {
@@ -181,6 +185,7 @@ public final class SBInventory implements SBInventoryType
       resources,
       configuration,
       strings,
+      mimeParsers,
       dbFile
     );
   }
@@ -189,6 +194,7 @@ public final class SBInventory implements SBInventoryType
    * Open the inventory in read-write mode.
    *
    * @param strings       The string resources
+   * @param mimeParsers
    * @param configuration The configuration
    *
    * @return An inventory
@@ -198,6 +204,7 @@ public final class SBInventory implements SBInventoryType
 
   public static SBInventoryType openReadWrite(
     final SBStrings strings,
+    final MimeParserFactoryType mimeParsers,
     final SBInventoryConfiguration configuration)
     throws SBInventoryException
   {
@@ -219,6 +226,7 @@ public final class SBInventory implements SBInventoryType
       resources,
       configuration,
       strings,
+      mimeParsers,
       dbFile
     );
   }
@@ -227,6 +235,7 @@ public final class SBInventory implements SBInventoryType
     final CloseableCollectionType<SBInventoryException> resources,
     final SBInventoryConfiguration configuration,
     final SBStrings strings,
+    final MimeParserFactoryType mimeParsers,
     final Path dbFile)
     throws SBInventoryException
   {
@@ -266,10 +275,10 @@ public final class SBInventory implements SBInventoryType
       }
 
       return new SBInventory(
+        mimeParsers,
         configuration,
         strings,
         resources,
-        dbFile,
         dataSource
       );
     } catch (final IOException e) {
@@ -330,6 +339,7 @@ public final class SBInventory implements SBInventoryType
     final CloseableCollectionType<SBInventoryException> resources,
     final SBInventoryConfiguration configuration,
     final SBStrings strings,
+    final MimeParserFactoryType mimeParsers,
     final Path dbFile)
     throws SBInventoryException
   {
@@ -368,10 +378,10 @@ public final class SBInventory implements SBInventoryType
       }
 
       return new SBInventory(
+        mimeParsers,
         configuration,
         strings,
         resources,
-        dbFile,
         dataSource
       );
     } catch (final IOException e) {
@@ -631,17 +641,21 @@ public final class SBInventory implements SBInventoryType
     private SBPackageEntry mapEntry(
       final Record5<String, String, Long, String, String> rec)
     {
-      return new SBPackageEntry(
-        SBPath.parse(rec.get(PACKAGE_BLOBS.PATH)),
-        new SBBlob(
-          rec.get(BLOBS.SIZE).longValue(),
-          rec.get(BLOBS.CONTENT_TYPE),
-          new SBHash(
-            SBHashAlgorithm.ofJSSName(rec.get(BLOBS.HASH_ALGORITHM)),
-            this.inventory.hexFormat.parseHex(rec.get(BLOBS.HASH))
+      try {
+        return new SBPackageEntry(
+          SBPath.parse(rec.get(PACKAGE_BLOBS.PATH)),
+          new SBBlob(
+            rec.get(BLOBS.SIZE).longValue(),
+            this.inventory.mimeParsers.parse(rec.get(BLOBS.CONTENT_TYPE)),
+            new SBHash(
+              SBHashAlgorithm.ofJSSName(rec.get(BLOBS.HASH_ALGORITHM)),
+              this.inventory.hexFormat.parseHex(rec.get(BLOBS.HASH))
+            )
           )
-        )
-      );
+        );
+      } catch (final MimeParseException e) {
+        throw new DataAccessException(e.getMessage(), e);
+      }
     }
 
     @Override
@@ -670,14 +684,18 @@ public final class SBInventory implements SBInventoryType
     private SBBlob mapBlobRecord(
       final Record rec)
     {
-      return new SBBlob(
-        rec.get(BLOBS.SIZE).longValue(),
-        rec.get(BLOBS.CONTENT_TYPE),
-        new SBHash(
-          SBHashAlgorithm.ofJSSName(rec.get(BLOBS.HASH_ALGORITHM)),
-          this.inventory.hexFormat.parseHex(rec.get(BLOBS.HASH))
-        )
-      );
+      try {
+        return new SBBlob(
+          rec.get(BLOBS.SIZE).longValue(),
+          this.inventory.mimeParsers.parse(rec.get(BLOBS.CONTENT_TYPE)),
+          new SBHash(
+            SBHashAlgorithm.ofJSSName(rec.get(BLOBS.HASH_ALGORITHM)),
+            this.inventory.hexFormat.parseHex(rec.get(BLOBS.HASH))
+          )
+        );
+      } catch (final MimeParseException e) {
+        throw new DataAccessException(e.getMessage(), e);
+      }
     }
 
     @Override
@@ -863,7 +881,7 @@ public final class SBInventory implements SBInventoryType
         context.insertInto(BLOBS)
           .set(BLOBS.HASH, this.inventory.hexFormat.formatHex(hash.value()))
           .set(BLOBS.HASH_ALGORITHM, hash.algorithm().jssAlgorithmName())
-          .set(BLOBS.CONTENT_TYPE, blob.contentType())
+          .set(BLOBS.CONTENT_TYPE, blob.contentType().toString())
           .set(BLOBS.SIZE, Long.valueOf(blob.size()))
           .onConflictDoNothing()
           .execute();

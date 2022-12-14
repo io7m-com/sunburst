@@ -21,6 +21,10 @@ import com.io7m.anethum.common.ParseException;
 import com.io7m.anethum.common.ParseSeverity;
 import com.io7m.anethum.common.ParseStatus;
 import com.io7m.jlexing.core.LexicalPosition;
+import com.io7m.mime2045.core.MimeType;
+import com.io7m.mime2045.parser.api.MimeParseException;
+import com.io7m.mime2045.parser.api.MimeParserFactoryType;
+import com.io7m.mime2045.parser.api.MimeParserType;
 import com.io7m.sunburst.model.SBBlob;
 import com.io7m.sunburst.model.SBHash;
 import com.io7m.sunburst.model.SBHashAlgorithm;
@@ -47,8 +51,11 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HexFormat;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.ServiceConfigurationError;
+import java.util.ServiceLoader;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.function.Consumer;
@@ -64,13 +71,37 @@ import static jakarta.xml.bind.ValidationEvent.WARNING;
 public final class SBPackageParsers
   implements SBPackageParserFactoryType
 {
+  private final MimeParserFactoryType mimeParsers;
+
   /**
    * The default package parsers.
    */
 
   public SBPackageParsers()
   {
+    this(
+      ServiceLoader.load(MimeParserFactoryType.class)
+        .findFirst()
+        .orElseThrow(() -> {
+          return new ServiceConfigurationError(
+            "No services available of type %s"
+              .formatted(MimeParserFactoryType.class)
+          );
+        })
+    );
+  }
 
+  /**
+   * The default package parsers.
+   *
+   * @param inMimeParsers A factory of MIME parsers
+   */
+
+  public SBPackageParsers(
+    final MimeParserFactoryType inMimeParsers)
+  {
+    this.mimeParsers =
+      Objects.requireNonNull(inMimeParsers, "mimeParsers");
   }
 
   @Override
@@ -84,7 +115,12 @@ public final class SBPackageParsers
     Objects.requireNonNull(stream, "stream");
     Objects.requireNonNull(statusConsumer, "statusConsumer");
 
-    return new Parser(source, stream, statusConsumer);
+    return new Parser(
+      source,
+      stream,
+      statusConsumer,
+      this.mimeParsers.create(Map.of())
+    );
   }
 
   private static final class Parser implements SBPackageParserType
@@ -96,11 +132,14 @@ public final class SBPackageParsers
     private final URI source;
     private final InputStream stream;
     private final Consumer<ParseStatus> statusConsumer;
+    private final MimeParserType mimeParser;
+    private ArrayList<ParseStatus> errors;
 
     Parser(
       final URI inSource,
       final InputStream inStream,
-      final Consumer<ParseStatus> inStatusConsumer)
+      final Consumer<ParseStatus> inStatusConsumer,
+      final MimeParserType mimeParserType)
     {
       this.source =
         Objects.requireNonNull(inSource, "source");
@@ -108,13 +147,17 @@ public final class SBPackageParsers
         Objects.requireNonNull(inStream, "stream");
       this.statusConsumer =
         Objects.requireNonNull(inStatusConsumer, "statusConsumer");
+      this.mimeParser =
+        Objects.requireNonNull(mimeParserType, "mimeParserType");
+      this.errors =
+        new ArrayList<ParseStatus>();
     }
 
     @Override
     public SBPackage execute()
       throws ParseException
     {
-      final var errors = new ArrayList<ParseStatus>();
+      this.errors.clear();
 
       try {
         final var schemas =
@@ -149,7 +192,7 @@ public final class SBPackageParsers
                   Optional.of(event.getLocator().getURL().toURI())
                 )).build();
 
-            errors.add(status);
+            this.errors.add(status);
             this.statusConsumer.accept(status);
           } catch (final URISyntaxException e) {
             // Nothing we can do about it
@@ -161,41 +204,62 @@ public final class SBPackageParsers
         final var streamSource =
           new StreamSource(this.stream, this.source.toString());
 
-        return processPackage((Package) unmarshaller.unmarshal(streamSource));
+        return this.processPackage((Package) unmarshaller.unmarshal(streamSource));
       } catch (final Exception e) {
-        throw new ParseException("Parsing failed.", List.copyOf(errors));
+        throw new ParseException("Parsing failed.", List.copyOf(this.errors));
       }
     }
 
-    private static SBPackage processPackage(
+    private SBPackage processPackage(
       final Package p)
+      throws MimeParseException
     {
       return new SBPackage(
         processIdentifier(p.getIdentifier()),
         processMetadata(p.getMetadata()),
-        processEntries(p.getEntries())
+        this.processEntries(p.getEntries())
       );
     }
 
-    private static SortedMap<SBPath, SBPackageEntry> processEntries(
+    private SortedMap<SBPath, SBPackageEntry> processEntries(
       final Entries entries)
+      throws MimeParseException
     {
       final var map = new TreeMap<SBPath, SBPackageEntry>();
       for (final var entry : entries.getEntry()) {
-        final SBPackageEntry pEntry = processEntry(entry);
+        final SBPackageEntry pEntry = this.processEntry(entry);
         map.put(pEntry.path(), pEntry);
       }
       return map;
     }
 
-    private static SBPackageEntry processEntry(
+    private SBPackageEntry processEntry(
       final Entry entry)
+      throws MimeParseException
     {
+      final MimeType type;
+
+      try {
+        type = this.mimeParser.parse(entry.getContentType());
+      } catch (final MimeParseException e) {
+        final var status =
+          ParseStatus.builder()
+            .setSeverity(ParseSeverity.PARSE_ERROR)
+            .setMessage(e.getMessage())
+            .setLexical(e.lexical())
+            .setErrorCode("error-mime")
+            .build();
+
+        this.errors.add(status);
+        this.statusConsumer.accept(status);
+        throw e;
+      }
+
       return new SBPackageEntry(
         SBPath.parse(entry.getPath()),
         new SBBlob(
           entry.getSize().longValue(),
-          entry.getContentType(),
+          type,
           new SBHash(
             SBHashAlgorithm.valueOf(entry.getHashAlgorithm().value()),
             HEX_FORMAT.parseHex(entry.getHashValue())

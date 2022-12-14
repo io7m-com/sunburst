@@ -16,6 +16,7 @@
 
 package com.io7m.sunburst.tests;
 
+import com.io7m.mime2045.core.MimeType;
 import com.io7m.sunburst.inventory.SBInventories;
 import com.io7m.sunburst.inventory.api.SBInventoryConfiguration;
 import com.io7m.sunburst.inventory.api.SBInventoryException;
@@ -62,6 +63,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class SBInventoriesTest
 {
+  private static final MimeType TEXT_PLAIN =
+    MimeType.of("text", "plain");
+  private static final MimeType OCTET_STREAM =
+    MimeType.of("application", "octet-stream");
+
   private Path directory;
   private SBInventories inventories;
 
@@ -82,7 +88,7 @@ public final class SBInventoriesTest
       final var hash =
         SBHash.hashOf(SHA2_256, new ByteArrayInputStream(buffer));
       final var blob =
-        new SBBlob(8192L, "application/octet-stream", hash);
+        new SBBlob(8192L, OCTET_STREAM, hash);
       blobs.put(hash, blob);
       blobsData.put(hash, Arrays.copyOf(buffer, buffer.length));
       entries.add(new SBPackageEntry(SBPath.parse("/a" + index), blob));
@@ -167,7 +173,7 @@ public final class SBInventoriesTest
     final var blob =
       new SBBlob(
         6L,
-        "text/plain",
+        TEXT_PLAIN,
         SBHash.hashOf(SHA2_256, Files.newInputStream(data))
       );
 
@@ -244,7 +250,7 @@ public final class SBInventoriesTest
     final var blob =
       new SBBlob(
         6L,
-        "text/plain",
+        TEXT_PLAIN,
         SBHash.hashOf(SHA2_256, Files.newInputStream(data))
       );
 
@@ -294,7 +300,7 @@ public final class SBInventoriesTest
     final var blob =
       new SBBlob(
         6L,
-        "text/plain",
+        TEXT_PLAIN,
         SBHash.hashOf(SHA2_256, Files.newInputStream(data))
       );
 
@@ -346,7 +352,7 @@ public final class SBInventoriesTest
         SBPath.parse("/a/b/c"),
         new SBBlob(
           23L,
-          "text/plain",
+          TEXT_PLAIN,
           SBHash.hashOf(
             SHA2_256, new ByteArrayInputStream(new byte[3])))
       )
@@ -470,7 +476,7 @@ public final class SBInventoriesTest
       final var hash =
         SBHash.hashOf(SHA2_256, new ByteArrayInputStream(buffer));
       final var blob =
-        new SBBlob(8192L, "application/octet-stream", hash);
+        new SBBlob(8192L, OCTET_STREAM, hash);
       blobs.put(hash, blob);
       blobsData.put(hash, Arrays.copyOf(buffer, buffer.length));
       entries.add(new SBPackageEntry(SBPath.parse("/a" + index), blob));
@@ -602,7 +608,7 @@ public final class SBInventoriesTest
       final var hash =
         SBHash.hashOf(SHA2_256, new ByteArrayInputStream(buffer));
       final var blob =
-        new SBBlob(8192L, "application/octet-stream", hash);
+        new SBBlob(8192L, OCTET_STREAM, hash);
       blobsBefore.put(hash, blob);
       blobsBeforeData.put(hash, Arrays.copyOf(buffer, buffer.length));
       entriesBefore.add(new SBPackageEntry(SBPath.parse("/a" + index), blob));
@@ -633,7 +639,7 @@ public final class SBInventoriesTest
       final var hash =
         SBHash.hashOf(SHA2_256, new ByteArrayInputStream(buffer));
       final var blob =
-        new SBBlob(8192L, "application/octet-stream", hash);
+        new SBBlob(8192L, OCTET_STREAM, hash);
       blobsAfter.put(hash, blob);
       blobsAfterData.put(hash, Arrays.copyOf(buffer, buffer.length));
       entriesAfter.add(new SBPackageEntry(SBPath.parse("/a" + index), blob));

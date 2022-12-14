@@ -17,6 +17,7 @@
 
 package com.io7m.sunburst.tests;
 
+import com.io7m.mime2045.core.MimeType;
 import com.io7m.sunburst.inventory.SBInventories;
 import com.io7m.sunburst.inventory.api.SBInventoryConfiguration;
 import com.io7m.sunburst.inventory.api.SBInventoryType;
@@ -64,6 +65,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class SBRuntimeContextTest
 {
+  private static final MimeType TEXT_PLAIN =
+    MimeType.of("text", "plain");
+
   private Path directory;
   private SBInventoryType inventory;
 
@@ -561,7 +565,7 @@ public final class SBRuntimeContextTest
       SBHash.hashOf(SHA2_256, Files.newInputStream(testFile));
 
     try (var transaction = this.inventory.openTransaction()) {
-      final var blob = new SBBlob(8192L, "text/plain", hash);
+      final var blob = new SBBlob(8192L, TEXT_PLAIN, hash);
       transaction.blobAdd(blob, Files.newInputStream(testFile));
 
       final var path =

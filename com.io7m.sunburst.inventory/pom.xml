@@ -9,7 +9,7 @@
   <parent>
     <artifactId>com.io7m.sunburst</artifactId>
     <groupId>com.io7m.sunburst</groupId>
-    <version>0.0.3</version>
+    <version>0.0.4</version>
   </parent>
 
   <artifactId>com.io7m.sunburst.inventory</artifactId>
@@ -35,6 +35,14 @@
       <version>${project.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>com.io7m.mime2045</groupId>
+      <artifactId>com.io7m.mime2045.parser.api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.io7m.mime2045</groupId>
+      <artifactId>com.io7m.mime2045.core</artifactId>
+    </dependency>
     <dependency>
       <groupId>com.io7m.jxtrand</groupId>
       <artifactId>com.io7m.jxtrand.vanilla</artifactId>

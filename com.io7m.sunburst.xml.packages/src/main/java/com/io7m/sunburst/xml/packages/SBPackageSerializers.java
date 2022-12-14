@@ -139,7 +139,7 @@ public final class SBPackageSerializers
     {
       final var e = this.objects.createEntry();
       final var blob = pe.blob();
-      e.setContentType(blob.contentType());
+      e.setContentType(blob.contentType().toString());
       e.setHashAlgorithm(
         switch (blob.hash().algorithm()) {
           case SHA2_256 -> HashAlgorithmT.SHA_2_256;

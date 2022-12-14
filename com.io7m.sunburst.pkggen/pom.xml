@@ -9,7 +9,7 @@
   <parent>
     <artifactId>com.io7m.sunburst</artifactId>
     <groupId>com.io7m.sunburst</groupId>
-    <version>0.0.3</version>
+    <version>0.0.4</version>
   </parent>
 
   <artifactId>com.io7m.sunburst.pkggen</artifactId>
@@ -33,6 +33,10 @@
     <dependency>
       <groupId>com.io7m.anethum</groupId>
       <artifactId>com.io7m.anethum.common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.io7m.mime2045</groupId>
+      <artifactId>com.io7m.mime2045.parser.api</artifactId>
     </dependency>
 
     <dependency>

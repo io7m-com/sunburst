@@ -20,6 +20,7 @@
 
 module com.io7m.sunburst.inventory
 {
+  uses com.io7m.mime2045.parser.api.MimeParserFactoryType;
   requires static org.osgi.annotation.bundle;
   requires static org.osgi.annotation.versioning;
 
@@ -27,6 +28,7 @@ module com.io7m.sunburst.inventory
   requires com.io7m.jdeferthrow.core;
   requires com.io7m.jmulticlose.core;
   requires com.io7m.jxtrand.vanilla;
+  requires com.io7m.mime2045.parser.api;
   requires com.io7m.trasco.api;
   requires com.io7m.trasco.vanilla;
   requires org.jooq;
