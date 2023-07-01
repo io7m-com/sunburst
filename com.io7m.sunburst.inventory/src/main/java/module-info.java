@@ -24,7 +24,7 @@ module com.io7m.sunburst.inventory
   requires static org.osgi.annotation.bundle;
   requires static org.osgi.annotation.versioning;
 
-  requires com.io7m.anethum.common;
+  requires com.io7m.anethum.api;
   requires com.io7m.jdeferthrow.core;
   requires com.io7m.jmulticlose.core;
   requires com.io7m.jxtrand.vanilla;

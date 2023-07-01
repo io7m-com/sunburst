@@ -17,7 +17,7 @@
 
 package com.io7m.sunburst.xml.packages;
 
-import com.io7m.anethum.common.SerializeException;
+import com.io7m.anethum.api.SerializationException;
 import com.io7m.sunburst.model.SBPackage;
 import com.io7m.sunburst.model.SBPackageEntry;
 import com.io7m.sunburst.model.SBPackageIdentifier;
@@ -95,7 +95,7 @@ public final class SBPackageSerializers
     @Override
     public void execute(
       final SBPackage value)
-      throws SerializeException
+      throws SerializationException
     {
       try {
         final var p =
@@ -115,7 +115,7 @@ public final class SBPackageSerializers
         marshaller.setProperty("jaxb.formatted.output", TRUE);
         marshaller.marshal(p, this.stream);
       } catch (final JAXBException e) {
-        throw new SerializeException(e.getMessage(), e);
+        throw new SerializationException(e.getMessage(), e);
       }
     }
 

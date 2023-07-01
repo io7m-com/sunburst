@@ -17,8 +17,8 @@
 
 package com.io7m.sunburst.tests;
 
-import com.io7m.anethum.common.ParseException;
-import com.io7m.anethum.common.ParseStatus;
+import com.io7m.anethum.api.ParsingException;
+import com.io7m.anethum.api.ParseStatus;
 import com.io7m.sunburst.model.SBPeer;
 import com.io7m.sunburst.xml.peers.SBPeerParsers;
 import com.io7m.sunburst.xml.peers.SBPeerSerializers;
@@ -83,7 +83,7 @@ public final class SBPeerParsersTest
         "hello.txt"
       );
 
-    assertThrows(ParseException.class, () -> {
+    assertThrows(ParsingException.class, () -> {
       this.parsers.parseFile(file, SBPeerParsersTest::onStatus);
     });
   }
@@ -110,7 +110,7 @@ public final class SBPeerParsersTest
         "peer0_invalid.xml"
       );
 
-    assertThrows(ParseException.class, () -> {
+    assertThrows(ParsingException.class, () -> {
       this.parsers.parseFile(file, SBPeerParsersTest::onStatus);
     });
   }
@@ -126,7 +126,7 @@ public final class SBPeerParsersTest
         "peer1_invalid.xml"
       );
 
-    assertThrows(ParseException.class, () -> {
+    assertThrows(ParsingException.class, () -> {
       this.parsers.parseFile(file, SBPeerParsersTest::onStatus);
     });
   }

@@ -17,9 +17,9 @@
 
 package com.io7m.sunburst.xml.peers;
 
-import com.io7m.anethum.common.ParseException;
-import com.io7m.anethum.common.ParseSeverity;
-import com.io7m.anethum.common.ParseStatus;
+import com.io7m.anethum.api.ParsingException;
+import com.io7m.anethum.api.ParseSeverity;
+import com.io7m.anethum.api.ParseStatus;
 import com.io7m.jlexing.core.LexicalPosition;
 import com.io7m.sunburst.model.SBPackageIdentifier;
 import com.io7m.sunburst.model.SBPeer;
@@ -98,7 +98,7 @@ public final class SBPeerParsers
 
     @Override
     public List<SBPeer> execute()
-      throws ParseException
+      throws ParsingException
     {
       final var errors = new ArrayList<ParseStatus>();
 
@@ -119,17 +119,15 @@ public final class SBPeerParsers
         unmarshaller.setEventHandler(event -> {
           try {
             final var status =
-              ParseStatus.builder()
-                .setErrorCode("xml")
-                .setMessage(event.getMessage())
-                .setSeverity(
+              ParseStatus.builder("xml", event.getMessage())
+                .withSeverity(
                   switch (event.getSeverity()) {
                     case WARNING -> ParseSeverity.PARSE_WARNING;
                     case ERROR -> ParseSeverity.PARSE_ERROR;
                     case FATAL_ERROR -> ParseSeverity.PARSE_ERROR;
                     default -> ParseSeverity.PARSE_ERROR;
                   })
-                .setLexical(LexicalPosition.of(
+                .withLexical(LexicalPosition.of(
                   event.getLocator().getLineNumber(),
                   event.getLocator().getColumnNumber(),
                   Optional.of(event.getLocator().getURL().toURI())
@@ -155,7 +153,7 @@ public final class SBPeerParsers
 
         return processPeers(unmarshalled);
       } catch (final Exception e) {
-        throw new ParseException("Parsing failed.", List.copyOf(errors));
+        throw new ParsingException("Parsing failed.", List.copyOf(errors));
       }
     }
 

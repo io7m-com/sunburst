@@ -30,7 +30,6 @@ module com.io7m.sunburst.xml.packages
   requires static org.osgi.annotation.versioning;
 
   requires com.io7m.anethum.api;
-  requires com.io7m.anethum.common;
   requires com.io7m.mime2045.parser.api;
   requires com.io7m.sunburst.model;
   requires jakarta.xml.bind;

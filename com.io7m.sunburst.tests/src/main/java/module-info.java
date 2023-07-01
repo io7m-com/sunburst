@@ -35,7 +35,7 @@ module com.io7m.sunburst.tests
   requires com.io7m.sunburst.xml.packages;
   requires com.io7m.sunburst.xml.peers;
 
-  requires com.io7m.anethum.common;
+  requires com.io7m.anethum.api;
   requires java.compiler;
   requires org.apache.commons.io;
   requires org.slf4j;

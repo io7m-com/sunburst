@@ -33,7 +33,7 @@ module com.io7m.sunburst.pkggen
   uses SBPackageSerializerFactoryType;
 
   requires com.io7m.mime2045.parser.api;
-  requires com.io7m.anethum.common;
+  requires com.io7m.anethum.api;
 
   exports com.io7m.sunburst.pkggen;
 }

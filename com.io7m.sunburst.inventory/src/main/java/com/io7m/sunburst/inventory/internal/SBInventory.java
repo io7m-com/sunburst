@@ -16,7 +16,7 @@
 
 package com.io7m.sunburst.inventory.internal;
 
-import com.io7m.anethum.common.ParseException;
+import com.io7m.anethum.api.ParsingException;
 import com.io7m.jdeferthrow.core.ExceptionTracker;
 import com.io7m.jmulticlose.core.CloseableCollection;
 import com.io7m.jmulticlose.core.CloseableCollectionType;
@@ -35,6 +35,7 @@ import com.io7m.sunburst.model.SBPackage;
 import com.io7m.sunburst.model.SBPackageEntry;
 import com.io7m.sunburst.model.SBPackageIdentifier;
 import com.io7m.sunburst.model.SBPath;
+import com.io7m.trasco.api.TrArguments;
 import com.io7m.trasco.api.TrException;
 import com.io7m.trasco.api.TrExecutorConfiguration;
 import com.io7m.trasco.api.TrSchemaRevisionSet;
@@ -268,6 +269,7 @@ public final class SBInventory implements SBInventoryType
             },
             revisions,
             PERFORM_UPGRADES,
+            TrArguments.empty(),
             connection
           )
         ).execute();
@@ -285,7 +287,7 @@ public final class SBInventory implements SBInventoryType
       throw new SBInventoryException(ERROR_IO, e.getMessage(), e);
     } catch (final TrException e) {
       throw new SBInventoryException(ERROR_DATABASE_TRASCO, e.getMessage(), e);
-    } catch (final ParseException | SQLException e) {
+    } catch (final ParsingException | SQLException e) {
       throw new SBInventoryException(ERROR_DATABASE, e.getMessage(), e);
     }
   }
@@ -372,6 +374,7 @@ public final class SBInventory implements SBInventoryType
             },
             revisions,
             FAIL_INSTEAD_OF_UPGRADING,
+            TrArguments.empty(),
             connection
           )
         ).execute();
@@ -388,7 +391,7 @@ public final class SBInventory implements SBInventoryType
       throw new SBInventoryException(ERROR_IO, e.getMessage(), e);
     } catch (final TrException e) {
       throw new SBInventoryException(ERROR_DATABASE_TRASCO, e.getMessage(), e);
-    } catch (final ParseException | SQLException e) {
+    } catch (final ParsingException | SQLException e) {
       throw new SBInventoryException(ERROR_DATABASE, e.getMessage(), e);
     }
   }
@@ -852,7 +855,7 @@ public final class SBInventory implements SBInventoryType
         }
 
       } catch (final DataAccessException e) {
-        if (e.getCause() instanceof SQLiteException ex) {
+        if (e.getCause() instanceof final SQLiteException ex) {
           if (ex.getResultCode() == SQLITE_CONSTRAINT_FOREIGNKEY) {
             throw new SBInventoryException(
               ERROR_BLOB_REFERENCED,
