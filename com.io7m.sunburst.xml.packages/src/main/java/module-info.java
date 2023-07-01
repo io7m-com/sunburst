@@ -42,5 +42,8 @@ module com.io7m.sunburst.xml.packages
   provides SBPackageSerializerFactoryType
     with SBPackageSerializers;
 
+  opens com.io7m.sunburst.xml.packages.jaxb
+    to jakarta.xml.bind;
+
   exports com.io7m.sunburst.xml.packages;
 }

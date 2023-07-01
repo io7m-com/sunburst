@@ -1,5 +1,5 @@
 /*
- * Copyright © 2022 Mark Raynsford <code@io7m.com> https://www.io7m.com
+ * Copyright © 2023 Mark Raynsford <code@io7m.com> https://www.io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -14,27 +14,31 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-/**
- * Asset package system (Runtime)
- */
-
-module com.io7m.sunburst.runtime
+module com.io7m.sunburst.tests
 {
   requires static org.osgi.annotation.bundle;
   requires static org.osgi.annotation.versioning;
 
-  requires transitive com.io7m.sunburst.error_codes;
-  requires transitive com.io7m.sunburst.model;
-  requires transitive com.io7m.sunburst.inventory.api;
+  requires org.junit.jupiter.api;
+  requires org.junit.jupiter.engine;
+  requires org.junit.platform.commons;
+  requires org.junit.platform.engine;
 
+  requires com.io7m.sunburst.codegen;
+  requires com.io7m.sunburst.error_codes;
+  requires com.io7m.sunburst.inventory.api;
+  requires com.io7m.sunburst.inventory;
+  requires com.io7m.sunburst.model;
+  requires com.io7m.sunburst.pkggen;
   requires com.io7m.sunburst.runtime.spi;
-  requires com.io7m.jxtrand.vanilla;
+  requires com.io7m.sunburst.runtime;
+  requires com.io7m.sunburst.xml.packages;
+  requires com.io7m.sunburst.xml.peers;
 
-  uses com.io7m.sunburst.runtime.spi.SBPeerFactoryType;
-  uses com.io7m.sunburst.inventory.api.SBInventoryFactoryType;
+  requires com.io7m.anethum.common;
+  requires java.compiler;
+  requires org.apache.commons.io;
+  requires org.slf4j;
 
-  opens com.io7m.sunburst.runtime
-    to com.io7m.jxtrand.vanilla;
-
-  exports com.io7m.sunburst.runtime;
+  exports com.io7m.sunburst.tests;
 }

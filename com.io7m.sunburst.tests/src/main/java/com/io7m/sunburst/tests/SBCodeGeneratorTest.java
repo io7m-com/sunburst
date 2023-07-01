@@ -21,16 +21,17 @@ import com.io7m.sunburst.codegen.SBCodeGeneratorConfiguration;
 import com.io7m.sunburst.codegen.SBCodeGenerators;
 import com.io7m.sunburst.model.SBPeer;
 import com.io7m.sunburst.xml.peers.SBPeerParsers;
-import com.sun.source.util.JavacTask;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.tools.ToolProvider;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Properties;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Locale.ROOT;
@@ -39,6 +40,19 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class SBCodeGeneratorTest
 {
+  private static final Properties TEST_PATHS =
+    new Properties();
+
+  static {
+    try (var stream =
+           SBCodeGeneratorTest.class.getResourceAsStream(
+             "/com/io7m/sunburst/tests/testPaths.properties")) {
+      TEST_PATHS.load(stream);
+    } catch (final IOException e) {
+      throw new UncheckedIOException(e);
+    }
+  }
+
   private Path directory;
   private SBCodeGenerators generators;
   private SBPeerParsers parsers;
@@ -216,12 +230,16 @@ public final class SBCodeGeneratorTest
           "-Werror",
           "-Xdiags:verbose",
           "-Xlint:unchecked",
+          "--add-modules",
+          "ALL-MODULE-PATH",
+          "-p",
+          TEST_PATHS.getProperty("testDependenciesPath"),
           "-d",
           this.directory.toAbsolutePath().toString()
         );
 
       final var task =
-        (JavacTask) tool.getTask(
+        tool.getTask(
           null,
           fileManager,
           listener,

@@ -14,7 +14,7 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package com.io7m.sunburst.tests.maven;
+package com.io7m.sunburst.tests.maven.plugin;
 
 import com.soebes.itf.jupiter.extension.MavenGoal;
 import com.soebes.itf.jupiter.extension.MavenJupiterExtension;

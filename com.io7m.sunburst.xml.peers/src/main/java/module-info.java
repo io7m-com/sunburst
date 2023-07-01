@@ -38,5 +38,8 @@ module com.io7m.sunburst.xml.peers
   provides SBPeerSerializerFactoryType
     with SBPeerSerializers;
 
+  opens com.io7m.sunburst.xml.peers.jaxb
+    to jakarta.xml.bind;
+
   exports com.io7m.sunburst.xml.peers;
 }

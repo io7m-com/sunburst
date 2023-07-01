@@ -8,7 +8,7 @@
   <parent>
     <groupId>com.io7m.primogenitor</groupId>
     <artifactId>com.io7m.primogenitor.full</artifactId>
-    <version>7.5.0</version>
+    <version>8.0.0-beta0001</version>
   </parent>
 
   <groupId>com.io7m.sunburst</groupId>
@@ -31,6 +31,7 @@
     <module>com.io7m.sunburst.pkggen</module>
     <module>com.io7m.sunburst.runtime.spi</module>
     <module>com.io7m.sunburst.runtime</module>
+    <module>com.io7m.sunburst.tests.maven.plugin</module>
     <module>com.io7m.sunburst.tests</module>
     <module>com.io7m.sunburst.xml.packages</module>
     <module>com.io7m.sunburst.xml.peers</module>
@@ -38,7 +39,7 @@
 
   <properties>
     <com.io7m.anethum.version>0.0.2</com.io7m.anethum.version>
-    <com.io7m.cedarbridge.version>0.0.12</com.io7m.cedarbridge.version>
+    <com.io7m.cedarbridge.version>1.2.0</com.io7m.cedarbridge.version>
     <com.io7m.jbssio.version>2.0.0</com.io7m.jbssio.version>
     <com.io7m.jxtrand.version>1.1.0</com.io7m.jxtrand.version>
     <com.io7m.lanark.version>1.0.0-beta0001</com.io7m.lanark.version>
@@ -164,7 +165,7 @@
       <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
-        <version>2.11.0</version>
+        <version>2.13.0</version>
       </dependency>
       <dependency>
         <groupId>jakarta.xml.bind</groupId>
@@ -174,7 +175,7 @@
       <dependency>
         <groupId>com.sun.xml.bind</groupId>
         <artifactId>jaxb-impl</artifactId>
-        <version>4.0.2</version>
+        <version>4.0.3</version>
       </dependency>
       <dependency>
         <groupId>com.io7m.anethum</groupId>
@@ -219,7 +220,7 @@
       <dependency>
         <groupId>org.xerial</groupId>
         <artifactId>sqlite-jdbc</artifactId>
-        <version>3.41.2.1</version>
+        <version>3.42.0.0</version>
       </dependency>
       <dependency>
         <groupId>com.io7m.trasco</groupId>
@@ -254,7 +255,7 @@
       <dependency>
         <groupId>org.apache.maven.plugin-tools</groupId>
         <artifactId>maven-plugin-annotations</artifactId>
-        <version>3.8.2</version>
+        <version>3.9.0</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -290,7 +291,7 @@
       <dependency>
         <groupId>com.io7m.primogenitor</groupId>
         <artifactId>com.io7m.primogenitor.support</artifactId>
-        <version>7.5.0</version>
+        <version>8.0.0-beta0001</version>
       </dependency>
       <dependency>
         <groupId>com.io7m.mime2045</groupId>

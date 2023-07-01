@@ -37,5 +37,12 @@ module com.io7m.sunburst.inventory
 
   requires transitive com.io7m.sunburst.inventory.api;
 
+  opens com.io7m.sunburst.inventory
+    to com.io7m.jxtrand.vanilla;
+
+  exports com.io7m.sunburst.inventory.internal.tables.records to org.jooq;
+  exports com.io7m.sunburst.inventory.internal.tables to org.jooq;
+  exports com.io7m.sunburst.inventory.internal to org.jooq;
+
   exports com.io7m.sunburst.inventory;
 }

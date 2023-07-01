@@ -12,55 +12,21 @@
     <version>0.0.5-SNAPSHOT</version>
   </parent>
 
-  <artifactId>com.io7m.sunburst.tests</artifactId>
+  <artifactId>com.io7m.sunburst.tests.maven.plugin</artifactId>
 
-  <name>com.io7m.sunburst.tests</name>
-  <description>Asset package system (Test suite)</description>
+  <name>com.io7m.sunburst.tests.maven.plugin</name>
+  <description>Asset package system (Maven plugin test suite)</description>
   <url>https://www.io7m.com/software/sunburst</url>
 
   <properties>
-    <mdep.analyze.skip>true</mdep.analyze.skip>
     <checkstyle.skip>true</checkstyle.skip>
-
-    <com.io7m.sunburst.test_deps_path>
-      ${project.build.directory}/test-runtime-dependencies
-    </com.io7m.sunburst.test_deps_path>
+    <mdep.analyze.skip>true</mdep.analyze.skip>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>com.io7m.sunburst.inventory</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>com.io7m.sunburst.xml.packages</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>com.io7m.sunburst.xml.peers</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>com.io7m.sunburst.codegen</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
       <artifactId>com.io7m.sunburst.maven.plugin</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>com.io7m.sunburst.runtime</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>com.io7m.sunburst.pkggen</artifactId>
       <version>${project.version}</version>
     </dependency>
 
@@ -99,37 +65,78 @@
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-plugin-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.plugin-tools</groupId>
+      <artifactId>maven-plugin-annotations</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-compat</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-artifact</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.soebes.itf.jupiter.extension</groupId>
+      <artifactId>itf-jupiter-extension</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
         <filtering>false</filtering>
-      </resource>
-      <resource>
-        <directory>src/main/resources-filtered</directory>
+      </testResource>
+      <testResource>
+        <directory>src/test/resources-it</directory>
         <filtering>true</filtering>
-      </resource>
-    </resources>
+      </testResource>
+    </testResources>
 
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
+        <groupId>com.soebes.itf.jupiter.extension</groupId>
+        <artifactId>itf-maven-plugin</artifactId>
         <executions>
           <execution>
-            <id>copy-test-compile-dependencies</id>
-            <phase>generate-sources</phase>
+            <id>installing</id>
+            <phase>pre-integration-test</phase>
             <goals>
-              <goal>copy-dependencies</goal>
+              <goal>install</goal>
+              <goal>resources-its</goal>
             </goals>
-            <configuration>
-              <includeGroupIds>com.io7m.sunburst,com.io7m.verona</includeGroupIds>
-              <outputDirectory>
-                ${com.io7m.sunburst.test_deps_path}
-              </outputDirectory>
-            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <systemProperties>
+            <maven.version>${maven.version}</maven.version>
+            <maven.home>${maven.home}</maven.home>
+          </systemProperties>
+        </configuration>
+        <executions>
+          <execution>
+            <id>run-it</id>
+            <phase>integration-test</phase>
+            <goals>
+              <goal>integration-test</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>
