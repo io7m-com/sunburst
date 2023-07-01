@@ -16,7 +16,7 @@
 
 package com.io7m.sunburst.codegen.internal;
 
-import com.io7m.anethum.common.SerializeException;
+import com.io7m.anethum.api.SerializationException;
 import com.io7m.jodist.ClassName;
 import com.io7m.jodist.CodeBlock;
 import com.io7m.jodist.FieldSpec;
@@ -96,7 +96,7 @@ public final class SBCodeGenerator implements SBCodeGeneratorType
     Files.createDirectories(path.getParent());
     try {
       this.peerSerializers.serializeFile(path, this.configuration.peers());
-    } catch (final SerializeException e) {
+    } catch (final SerializationException e) {
       throw new IOException(e);
     }
   }

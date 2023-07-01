@@ -17,8 +17,8 @@
 
 package com.io7m.sunburst.tests;
 
-import com.io7m.anethum.common.ParseException;
-import com.io7m.anethum.common.ParseStatus;
+import com.io7m.anethum.api.ParsingException;
+import com.io7m.anethum.api.ParseStatus;
 import com.io7m.mime2045.core.MimeType;
 import com.io7m.sunburst.model.SBBlob;
 import com.io7m.sunburst.model.SBHash;
@@ -93,7 +93,7 @@ public final class SBPackageParsersTest
         "hello.txt"
       );
 
-    assertThrows(ParseException.class, () -> {
+    assertThrows(ParsingException.class, () -> {
       this.parsers.parseFile(file, SBPackageParsersTest::onStatus);
     });
   }
@@ -120,7 +120,7 @@ public final class SBPackageParsersTest
         "p0_invalid.xml"
       );
 
-    assertThrows(ParseException.class, () -> {
+    assertThrows(ParsingException.class, () -> {
       this.parsers.parseFile(file, SBPackageParsersTest::onStatus);
     });
   }
@@ -136,7 +136,7 @@ public final class SBPackageParsersTest
         "p1_invalid.xml"
       );
 
-    assertThrows(ParseException.class, () -> {
+    assertThrows(ParsingException.class, () -> {
       this.parsers.parseFile(file, SBPackageParsersTest::onStatus);
     });
   }

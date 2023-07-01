@@ -23,7 +23,7 @@ module com.io7m.sunburst.codegen
   requires static org.osgi.annotation.bundle;
   requires static org.osgi.annotation.versioning;
 
-  requires com.io7m.anethum.common;
+  requires com.io7m.anethum.api;
   requires com.io7m.jodist;
   requires com.io7m.sunburst.model;
   requires com.io7m.sunburst.runtime.spi;

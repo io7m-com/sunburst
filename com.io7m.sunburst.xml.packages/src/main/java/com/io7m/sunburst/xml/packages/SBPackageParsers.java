@@ -17,9 +17,9 @@
 
 package com.io7m.sunburst.xml.packages;
 
-import com.io7m.anethum.common.ParseException;
-import com.io7m.anethum.common.ParseSeverity;
-import com.io7m.anethum.common.ParseStatus;
+import com.io7m.anethum.api.ParsingException;
+import com.io7m.anethum.api.ParseSeverity;
+import com.io7m.anethum.api.ParseStatus;
 import com.io7m.jlexing.core.LexicalPosition;
 import com.io7m.mime2045.core.MimeType;
 import com.io7m.mime2045.parser.api.MimeParseException;
@@ -155,7 +155,7 @@ public final class SBPackageParsers
 
     @Override
     public SBPackage execute()
-      throws ParseException
+      throws ParsingException
     {
       this.errors.clear();
 
@@ -176,17 +176,15 @@ public final class SBPackageParsers
         unmarshaller.setEventHandler(event -> {
           try {
             final var status =
-              ParseStatus.builder()
-                .setErrorCode("xml")
-                .setMessage(event.getMessage())
-                .setSeverity(
+              ParseStatus.builder("xml", event.getMessage())
+                .withSeverity(
                   switch (event.getSeverity()) {
                     case WARNING -> ParseSeverity.PARSE_WARNING;
                     case ERROR -> ParseSeverity.PARSE_ERROR;
                     case FATAL_ERROR -> ParseSeverity.PARSE_ERROR;
                     default -> ParseSeverity.PARSE_ERROR;
                   })
-                .setLexical(LexicalPosition.of(
+                .withLexical(LexicalPosition.of(
                   event.getLocator().getLineNumber(),
                   event.getLocator().getColumnNumber(),
                   Optional.of(event.getLocator().getURL().toURI())
@@ -206,7 +204,7 @@ public final class SBPackageParsers
 
         return this.processPackage((Package) unmarshaller.unmarshal(streamSource));
       } catch (final Exception e) {
-        throw new ParseException("Parsing failed.", List.copyOf(this.errors));
+        throw new ParsingException("Parsing failed.", List.copyOf(this.errors));
       }
     }
 
@@ -243,11 +241,9 @@ public final class SBPackageParsers
         type = this.mimeParser.parse(entry.getContentType());
       } catch (final MimeParseException e) {
         final var status =
-          ParseStatus.builder()
-            .setSeverity(ParseSeverity.PARSE_ERROR)
-            .setMessage(e.getMessage())
-            .setLexical(e.lexical())
-            .setErrorCode("error-mime")
+          ParseStatus.builder("error-mine", e.getMessage())
+            .withSeverity(ParseSeverity.PARSE_ERROR)
+            .withLexical(e.lexical())
             .build();
 
         this.errors.add(status);

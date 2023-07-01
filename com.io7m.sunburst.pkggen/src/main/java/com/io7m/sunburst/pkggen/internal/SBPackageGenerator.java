@@ -17,7 +17,7 @@
 
 package com.io7m.sunburst.pkggen.internal;
 
-import com.io7m.anethum.common.SerializeException;
+import com.io7m.anethum.api.SerializationException;
 import com.io7m.mime2045.parser.api.MimeParseException;
 import com.io7m.mime2045.parser.api.MimeParserFactoryType;
 import com.io7m.sunburst.model.SBBlob;
@@ -149,7 +149,7 @@ public final class SBPackageGenerator implements SBPackageGeneratorType
           packageV
         );
       }
-    } catch (final SerializeException e) {
+    } catch (final SerializationException e) {
       throw new IOException(e);
     }
 

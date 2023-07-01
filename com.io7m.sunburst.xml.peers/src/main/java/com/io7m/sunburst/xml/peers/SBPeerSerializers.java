@@ -17,7 +17,7 @@
 
 package com.io7m.sunburst.xml.peers;
 
-import com.io7m.anethum.common.SerializeException;
+import com.io7m.anethum.api.SerializationException;
 import com.io7m.sunburst.model.SBPeer;
 import com.io7m.sunburst.xml.peers.jaxb.Import;
 import com.io7m.sunburst.xml.peers.jaxb.ObjectFactory;
@@ -81,7 +81,7 @@ public final class SBPeerSerializers
     @Override
     public void execute(
       final List<SBPeer> value)
-      throws SerializeException
+      throws SerializationException
     {
       try {
         final var peers =
@@ -118,7 +118,7 @@ public final class SBPeerSerializers
         marshaller.setProperty("jaxb.formatted.output", TRUE);
         marshaller.marshal(peers, this.stream);
       } catch (final JAXBException e) {
-        throw new SerializeException(e.getMessage(), e);
+        throw new SerializationException(e.getMessage(), e);
       }
     }
 
