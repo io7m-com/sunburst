@@ -100,7 +100,7 @@
         <filtering>false</filtering>
       </testResource>
       <testResource>
-        <directory>src/test/resources-it</directory>
+        <directory>src/test/resources-its</directory>
         <filtering>true</filtering>
       </testResource>
     </testResources>
@@ -111,10 +111,16 @@
         <artifactId>itf-maven-plugin</artifactId>
         <executions>
           <execution>
-            <id>installing</id>
+            <id>ift-maven-plugin-install</id>
             <phase>pre-integration-test</phase>
             <goals>
               <goal>install</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>ift-maven-plugin-resources</id>
+            <phase>pre-integration-test</phase>
+            <goals>
               <goal>resources-its</goal>
             </goals>
           </execution>
@@ -129,16 +135,9 @@
             <maven.version>${maven.version}</maven.version>
             <maven.home>${maven.home}</maven.home>
           </systemProperties>
+          <testSourceDirectory>${project.build.testSourceDirectory}</testSourceDirectory>
+          <testClassesDirectory>${project.build.testOutputDirectory}</testClassesDirectory>
         </configuration>
-        <executions>
-          <execution>
-            <id>run-it</id>
-            <phase>integration-test</phase>
-            <goals>
-              <goal>integration-test</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
 
       <!-- Determine test coverage -->
