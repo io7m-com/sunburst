@@ -29,7 +29,6 @@ module com.io7m.sunburst.codegen
   requires com.io7m.sunburst.runtime.spi;
   requires com.io7m.sunburst.xml.peers;
   requires java.compiler;
-  requires org.osgi.service.component.annotations;
 
   uses com.io7m.sunburst.xml.peers.SBPeerSerializerFactoryType;
 

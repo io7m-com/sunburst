@@ -20,7 +20,7 @@
 
 @Export
 @Version("1.0.0")
-package com.io7m.sunburst.tests.maven;
+package com.io7m.sunburst.tests.maven.plugin;
 
 import org.osgi.annotation.bundle.Export;
 import org.osgi.annotation.versioning.Version;

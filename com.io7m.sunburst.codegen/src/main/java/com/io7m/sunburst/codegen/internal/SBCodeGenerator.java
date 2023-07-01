@@ -17,7 +17,6 @@
 package com.io7m.sunburst.codegen.internal;
 
 import com.io7m.anethum.common.SerializeException;
-import com.io7m.jodist.AnnotationSpec;
 import com.io7m.jodist.ClassName;
 import com.io7m.jodist.CodeBlock;
 import com.io7m.jodist.FieldSpec;
@@ -32,7 +31,6 @@ import com.io7m.sunburst.model.SBPeerException;
 import com.io7m.sunburst.runtime.spi.SBPeerFactoryType;
 import com.io7m.sunburst.xml.peers.SBPeerSerializerFactoryType;
 import com.io7m.verona.core.Version;
-import org.osgi.service.component.annotations.Component;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -190,12 +188,6 @@ public final class SBCodeGenerator implements SBCodeGeneratorType
     final var classBuilder =
       TypeSpec.classBuilder(className);
 
-    final var annotSpec =
-      AnnotationSpec.builder(Component.class)
-        .addMember("service", "$T.class", SBPeerFactoryType.class)
-        .build();
-
-    classBuilder.addAnnotation(annotSpec);
     classBuilder.addModifiers(PUBLIC, FINAL);
     classBuilder.addSuperinterface(SBPeerFactoryType.class);
     classBuilder.addJavadoc(
