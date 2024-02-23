@@ -48,6 +48,7 @@
     <com.io7m.verona.version>1.0.0</com.io7m.verona.version>
     <com.io7m.xstructural.version>1.8.0</com.io7m.xstructural.version>
     <io7m.api.previousVersion>0.0.6</io7m.api.previousVersion>
+    <io7m.java.targetJavaVersion>21</io7m.java.targetJavaVersion>
     <io7m.maven-api.version>3.9.6</io7m.maven-api.version>
     <jooq.version>3.19.1</jooq.version>
     <junit.version>5.10.1</junit.version>
