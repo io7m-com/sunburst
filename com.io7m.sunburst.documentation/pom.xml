@@ -17,7 +17,7 @@
 
   <description>Asset package system (Documentation)</description>
   <name>com.io7m.sunburst.documentation</name>
-  <url>https://www.github.com/io7m/sunburst</url>
+  <url>https://www.github.com/io7m-com/sunburst</url>
 
   <properties>
     <mdep.analyze.skip>true</mdep.analyze.skip>

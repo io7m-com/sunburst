@@ -174,7 +174,7 @@ public final class SBPackageParsersTest
       "sunburst", meta.get("project.name")
     );
     assertEquals(
-      "https://www.github.com/io7m/sunburst", meta.get("project.scm")
+      "https://www.github.com/io7m-com/sunburst", meta.get("project.scm")
     );
     assertEquals(3, meta.size());
 
