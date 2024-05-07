@@ -50,7 +50,7 @@
     <io7m.api.previousVersion>0.0.6</io7m.api.previousVersion>
     <io7m.java.targetJavaVersion>21</io7m.java.targetJavaVersion>
     <io7m.maven-api.version>3.9.6</io7m.maven-api.version>
-    <jooq.version>3.19.7</jooq.version>
+    <jooq.version>3.19.8</jooq.version>
     <junit.version>5.10.2</junit.version>
   </properties>
 
