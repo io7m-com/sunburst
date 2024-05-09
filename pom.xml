@@ -46,7 +46,7 @@
     <com.io7m.mime2045.version>1.0.0</com.io7m.mime2045.version>
     <com.io7m.trasco.version>1.1.0</com.io7m.trasco.version>
     <com.io7m.verona.version>1.0.0</com.io7m.verona.version>
-    <com.io7m.xstructural.version>1.8.0</com.io7m.xstructural.version>
+    <com.io7m.xstructural.version>1.8.1</com.io7m.xstructural.version>
     <io7m.api.previousVersion>0.0.6</io7m.api.previousVersion>
     <io7m.java.targetJavaVersion>21</io7m.java.targetJavaVersion>
     <io7m.maven-api.version>3.9.6</io7m.maven-api.version>
