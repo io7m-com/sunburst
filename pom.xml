@@ -13,7 +13,7 @@
 
   <groupId>com.io7m.sunburst</groupId>
   <artifactId>com.io7m.sunburst</artifactId>
-  <version>0.0.7</version>
+  <version>1.0.0-SNAPSHOT</version>
 
   <packaging>pom</packaging>
   <name>com.io7m.sunburst</name>
@@ -39,7 +39,7 @@
 
   <properties>
     <!-- Configuration -->
-    <io7m.api.previousVersion>0.0.6</io7m.api.previousVersion>
+    <io7m.api.previousVersion>0.0.7</io7m.api.previousVersion>
     <io7m.java.targetJavaVersion>21</io7m.java.targetJavaVersion>
 
     <!-- io7m dependencies. -->
