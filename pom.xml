@@ -38,6 +38,11 @@
   </modules>
 
   <properties>
+    <!-- Configuration -->
+    <io7m.api.previousVersion>0.0.6</io7m.api.previousVersion>
+    <io7m.java.targetJavaVersion>21</io7m.java.targetJavaVersion>
+
+    <!-- io7m dependencies. -->
     <com.io7m.anethum.version>1.1.1</com.io7m.anethum.version>
     <com.io7m.cedarbridge.version>1.2.0</com.io7m.cedarbridge.version>
     <com.io7m.jbssio.version>2.1.0</com.io7m.jbssio.version>
@@ -47,11 +52,11 @@
     <com.io7m.trasco.version>1.1.0</com.io7m.trasco.version>
     <com.io7m.verona.version>1.0.1</com.io7m.verona.version>
     <com.io7m.xstructural.version>1.8.1</com.io7m.xstructural.version>
-    <io7m.api.previousVersion>0.0.6</io7m.api.previousVersion>
-    <io7m.java.targetJavaVersion>21</io7m.java.targetJavaVersion>
+
+    <!-- Third-party dependencies. -->
     <io7m.maven-api.version>3.9.6</io7m.maven-api.version>
-    <jooq.version>3.19.8</jooq.version>
-    <junit.version>5.10.2</junit.version>
+    <org.jooq.version>3.19.8</org.jooq.version>
+    <org.junit.version>5.10.2</org.junit.version>
   </properties>
 
   <licenses>
@@ -108,26 +113,29 @@
 
   <dependencyManagement>
     <dependencies>
+      <!-- Build and metadata. -->
       <dependency>
-        <groupId>com.io7m.cedarbridge</groupId>
-        <artifactId>com.io7m.cedarbridge.runtime.api</artifactId>
-        <version>${com.io7m.cedarbridge.version}</version>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.annotation.bundle</artifactId>
+        <version>2.0.0</version>
       </dependency>
       <dependency>
-        <groupId>com.io7m.cedarbridge</groupId>
-        <artifactId>com.io7m.cedarbridge.runtime.bssio</artifactId>
-        <version>${com.io7m.cedarbridge.version}</version>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.annotation.versioning</artifactId>
+        <version>1.1.2</version>
       </dependency>
       <dependency>
-        <groupId>com.io7m.jbssio</groupId>
-        <artifactId>com.io7m.jbssio.vanilla</artifactId>
-        <version>${com.io7m.jbssio.version}</version>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.service.component.annotations</artifactId>
+        <version>1.5.1</version>
       </dependency>
       <dependency>
-        <groupId>com.io7m.jbssio</groupId>
-        <artifactId>com.io7m.jbssio.api</artifactId>
-        <version>${com.io7m.jbssio.version}</version>
+        <groupId>com.io7m.primogenitor</groupId>
+        <artifactId>com.io7m.primogenitor.support</artifactId>
+        <version>8.2.0</version>
       </dependency>
+
+      <!-- Core -->
       <dependency>
         <groupId>com.io7m.jdeferthrow</groupId>
         <artifactId>com.io7m.jdeferthrow.core</artifactId>
@@ -159,11 +167,6 @@
         <version>2.0.13</version>
       </dependency>
       <dependency>
-        <groupId>com.h2database</groupId>
-        <artifactId>h2-mvstore</artifactId>
-        <version>2.2.224</version>
-      </dependency>
-      <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
         <version>2.16.1</version>
@@ -184,35 +187,47 @@
         <version>${com.io7m.anethum.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.osgi</groupId>
-        <artifactId>org.osgi.annotation.bundle</artifactId>
-        <version>2.0.0</version>
-      </dependency>
-      <dependency>
-        <groupId>org.osgi</groupId>
-        <artifactId>org.osgi.annotation.versioning</artifactId>
-        <version>1.1.2</version>
-      </dependency>
-      <dependency>
-        <groupId>org.osgi</groupId>
-        <artifactId>org.osgi.service.component.annotations</artifactId>
-        <version>1.5.1</version>
-      </dependency>
-      <dependency>
         <groupId>com.io7m.jlexing</groupId>
         <artifactId>com.io7m.jlexing.core</artifactId>
         <version>3.2.0</version>
       </dependency>
       <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter-engine</artifactId>
-        <version>${junit.version}</version>
+        <groupId>com.io7m.jodist</groupId>
+        <artifactId>com.io7m.jodist</artifactId>
+        <version>2.0.0</version>
       </dependency>
       <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter-api</artifactId>
-        <version>${junit.version}</version>
+        <groupId>com.io7m.verona</groupId>
+        <artifactId>com.io7m.verona.core</artifactId>
+        <version>${com.io7m.verona.version}</version>
       </dependency>
+      <dependency>
+        <groupId>com.io7m.mime2045</groupId>
+        <artifactId>com.io7m.mime2045.core</artifactId>
+        <version>${com.io7m.mime2045.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.io7m.mime2045</groupId>
+        <artifactId>com.io7m.mime2045.parser.api</artifactId>
+        <version>${com.io7m.mime2045.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.io7m.mime2045</groupId>
+        <artifactId>com.io7m.mime2045.parser</artifactId>
+        <version>${com.io7m.mime2045.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.io7m.lanark</groupId>
+        <artifactId>com.io7m.lanark.core</artifactId>
+        <version>${com.io7m.lanark.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.io7m.lanark</groupId>
+        <artifactId>com.io7m.lanark.arbitraries</artifactId>
+        <version>${com.io7m.lanark.version}</version>
+      </dependency>
+
+      <!-- Inventory database. -->
       <dependency>
         <groupId>org.xerial</groupId>
         <artifactId>sqlite-jdbc</artifactId>
@@ -231,18 +246,10 @@
       <dependency>
         <groupId>org.jooq</groupId>
         <artifactId>jooq</artifactId>
-        <version>${jooq.version}</version>
+        <version>${org.jooq.version}</version>
       </dependency>
-      <dependency>
-        <groupId>com.io7m.jodist</groupId>
-        <artifactId>com.io7m.jodist</artifactId>
-        <version>2.0.0</version>
-      </dependency>
-      <dependency>
-        <groupId>com.io7m.verona</groupId>
-        <artifactId>com.io7m.verona.core</artifactId>
-        <version>${com.io7m.verona.version}</version>
-      </dependency>
+
+      <!-- Maven plugin. -->
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-plugin-api</artifactId>
@@ -279,40 +286,19 @@
         <artifactId>maven-artifact</artifactId>
         <version>${io7m.maven-api.version}</version>
       </dependency>
+
+      <!-- Test suite. -->
+      <dependency>
+        <groupId>org.junit</groupId>
+        <artifactId>junit-bom</artifactId>
+        <version>${org.junit.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
       <dependency>
         <groupId>com.soebes.itf.jupiter.extension</groupId>
         <artifactId>itf-jupiter-extension</artifactId>
         <version>0.13.1</version>
-      </dependency>
-      <dependency>
-        <groupId>com.io7m.primogenitor</groupId>
-        <artifactId>com.io7m.primogenitor.support</artifactId>
-        <version>8.2.0</version>
-      </dependency>
-      <dependency>
-        <groupId>com.io7m.mime2045</groupId>
-        <artifactId>com.io7m.mime2045.core</artifactId>
-        <version>${com.io7m.mime2045.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.io7m.mime2045</groupId>
-        <artifactId>com.io7m.mime2045.parser.api</artifactId>
-        <version>${com.io7m.mime2045.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.io7m.mime2045</groupId>
-        <artifactId>com.io7m.mime2045.parser</artifactId>
-        <version>${com.io7m.mime2045.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.io7m.lanark</groupId>
-        <artifactId>com.io7m.lanark.core</artifactId>
-        <version>${com.io7m.lanark.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.io7m.lanark</groupId>
-        <artifactId>com.io7m.lanark.arbitraries</artifactId>
-        <version>${com.io7m.lanark.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
