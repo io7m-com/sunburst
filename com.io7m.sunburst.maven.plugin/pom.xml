@@ -9,7 +9,7 @@
   <parent>
     <artifactId>com.io7m.sunburst</artifactId>
     <groupId>com.io7m.sunburst</groupId>
-    <version>0.0.6</version>
+    <version>0.0.7</version>
   </parent>
 
   <artifactId>com.io7m.sunburst.maven.plugin</artifactId>
@@ -77,11 +77,14 @@
         <artifactId>maven-plugin-plugin</artifactId>
         <executions>
           <execution>
-            <id>mojo-descriptor</id>
+            <id>default-descriptor</id>
             <phase>process-classes</phase>
             <goals>
               <goal>descriptor</goal>
             </goals>
+            <configuration>
+              <goalPrefix>sunburst</goalPrefix>
+            </configuration>
           </execution>
         </executions>
       </plugin>
