@@ -55,7 +55,7 @@
 
     <!-- Third-party dependencies. -->
     <io7m.maven-api.version>3.9.9</io7m.maven-api.version>
-    <org.jooq.version>3.19.12</org.jooq.version>
+    <org.jooq.version>3.19.13</org.jooq.version>
     <org.junit.version>5.11.0</org.junit.version>
   </properties>
 
