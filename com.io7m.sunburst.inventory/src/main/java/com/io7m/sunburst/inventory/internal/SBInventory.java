@@ -254,6 +254,7 @@ public final class SBInventory implements SBInventoryType
 
       final var config = new SQLiteConfig();
       config.enforceForeignKeys(true);
+      config.setJournalMode(SQLiteConfig.JournalMode.WAL);
 
       final var dataSource = new SQLiteDataSource(config);
       dataSource.setUrl(url.toString());
@@ -359,6 +360,7 @@ public final class SBInventory implements SBInventoryType
 
       final var config = new SQLiteConfig();
       config.setReadOnly(true);
+      config.setJournalMode(SQLiteConfig.JournalMode.WAL);
 
       final var dataSource = new SQLiteDataSource(config);
       dataSource.setUrl(url.toString());
