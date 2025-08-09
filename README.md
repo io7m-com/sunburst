@@ -14,3 +14,10 @@ sunburst
 | OpenJDK (Temurin) LTS | Linux | [![Build (OpenJDK (Temurin) LTS, Linux)](https://img.shields.io/github/actions/workflow/status/io7m-com/sunburst/main.linux.temurin.lts.yml)](https://www.github.com/io7m-com/sunburst/actions?query=workflow%3Amain.linux.temurin.lts)|
 | OpenJDK (Temurin) Current | Windows | [![Build (OpenJDK (Temurin) Current, Windows)](https://img.shields.io/github/actions/workflow/status/io7m-com/sunburst/main.windows.temurin.current.yml)](https://www.github.com/io7m-com/sunburst/actions?query=workflow%3Amain.windows.temurin.current)|
 | OpenJDK (Temurin) LTS | Windows | [![Build (OpenJDK (Temurin) LTS, Windows)](https://img.shields.io/github/actions/workflow/status/io7m-com/sunburst/main.windows.temurin.lts.yml)](https://www.github.com/io7m-com/sunburst/actions?query=workflow%3Amain.windows.temurin.lts)|
+## sunburst
+
+The `sunburst` package implements a strongly-versioned asset package
+system with transactional semantics that provides file-based random
+access to objects.
+
+

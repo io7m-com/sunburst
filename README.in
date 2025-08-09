@@ -1,0 +1,6 @@
+## sunburst
+
+The `sunburst` package implements a strongly-versioned asset package
+system with transactional semantics that provides file-based random
+access to objects.
+
