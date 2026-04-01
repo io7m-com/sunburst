@@ -54,7 +54,7 @@
     <com.io7m.xstructural.version>1.9.0</com.io7m.xstructural.version>
 
     <!-- Third-party dependencies. -->
-    <io7m.maven-api.version>3.9.12</io7m.maven-api.version>
+    <io7m.maven-api.version>3.9.14</io7m.maven-api.version>
     <org.jooq.version>3.20.11</org.jooq.version>
     <org.junit.version>5.14.3</org.junit.version>
   </properties>
